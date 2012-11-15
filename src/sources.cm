@@ -1,0 +1,11 @@
+(*
+ * @author YAMATODANI Kiyoshi
+ * @copyright 2010, Tohoku University.
+ *)
+Group
+  signature SMLUNIT
+  structure SMLUnit
+  signature ASSERT
+  signature TEST
+is
+  main/sources.cm
