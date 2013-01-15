@@ -3,6 +3,9 @@
  * @copyright 2010, Tohoku University.
  *)
 Library
-	source(-)
+	signature ASSERT
+	signature SMLUNIT
+	signature TEST
+	structure SMLUnit
 is
-        src/sources.cm
+	src/sources.cm
