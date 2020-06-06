@@ -1,6 +1,7 @@
 
 POLYML ?= poly
 POLYMLC ?= polyc
+POLYMLFLAGS ?= -q --error-exit --use ./script/usesig.sml
 
 SRC := $(wildcard src/main/*.sml)
 TEST_SRC := $(wildcard src/test/*.sml)
@@ -11,13 +12,11 @@ all: smlunit
 
 .PHONY: smlunit
 smlunit: $(SRC)
-	echo "" | $(POLYML) -q --error-exit --use ./usesig.sml \
-		--eval 'PolyML.make "src/main"'
+	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "src/main"'
 
 
 smlunit-test-poly.o: $(SRC) $(TEST_SRC)
-	echo "" | $(POLYML) --error-exit --use ./usesig.sml \
-		--eval 'PolyML.make "src/test"' \
+	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "src/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
