@@ -115,12 +115,14 @@ struct
       case I.precision
        of SOME 31 => (1073741823.0, valOf I.maxInt)
         | SOME 32 => (2147483647.0, valOf I.maxInt)
+        | SOME 63 => (4611686018427387903.0, valOf I.maxInt)
         | SOME 64 => (9223372036854775807.0, valOf I.maxInt)
         | NONE => (9223372036854775807.0, I2i 9223372036854775807) (* ? *)
   val (minInt_r, minInt) =
       case I.precision
        of SOME 31 => (~1073741824.0, valOf I.minInt)
         | SOME 32 => (~2147483648.0, valOf I.minInt)
+        | SOME 63 => (~4611686018427387904.0, valOf I.minInt)
         | SOME 64 => (~9223372036854775808.0, valOf I.minInt)
         | NONE => (~9223372036854775808.0, I2i ~9223372036854775808) (* ? *)
   val maxInt_L = LargeInt.fromInt maxInt
