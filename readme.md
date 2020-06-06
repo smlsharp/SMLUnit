@@ -99,3 +99,14 @@ $(SMLUNIT_LIB)/smlunit-lib.mlb
 foo_test.sml
 ```
 
+### PolyML
+
+`loadState "libsmlunit.poly"` for other project.
+
+```sh
+$ poly
+> PolyML.SaveState.loadState "/path/to/libsmlunit.poly";
+val it = (): unit
+>
+```
+
