@@ -3,8 +3,8 @@ POLYML ?= poly
 POLYMLC ?= polyc
 POLYMLFLAGS ?= -q --error-exit --use ./script/usesig.sml
 
-SRC := $(wildcard src/main/*.sml)
-TEST_SRC := $(wildcard src/test/*.sml)
+SRC := $(wildcard src/main/*)
+TEST_SRC := $(wildcard src/test/* ./basis/test/*)
 
 
 all: smlunit
@@ -20,17 +20,27 @@ smlunit-test-poly.o: $(SRC) $(TEST_SRC)
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
+smlunit-basis-test-poly.o: $(SRC) $(TEST_SRC)
+	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "basis/test"' \
+		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
+
+
 smlunit-test-poly: smlunit-test-poly.o
 	$(POLYMLC) -o $@ $^
 
 
+smlunit-basis-test-poly: smlunit-basis-test-poly.o
+	$(POLYMLC) -o $@ $^
+
+
 .PHONY: test
-test: smlunit-test-poly
+test: smlunit-test-poly smlunit-basis-test-poly
 	./smlunit-test-poly
+	./smlunit-basis-test-poly
 
 
-PHOENY: clean
+.PHONY: clean
 clean:
-	$(RM) smlunit-test-poly
-	$(RM) smlunit-test-poly.o
+	$(RM) smlunit-test-poly smlunit-basis-test-poly
+	$(RM) smlunit-test-poly.o smlunit-basis-test-poly.o
 
