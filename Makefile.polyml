@@ -1,0 +1,32 @@
+
+POLYML ?= poly
+POLYMLC ?= polyc
+
+SRC := $(wildcard src/*.sml)
+
+
+all: smlunit
+
+
+.PHONY: smlunit
+smlunit: polyml_make.sml
+	$(POLYML) -q --error-exit --use ./usesig.sml < polyml_make.sml
+
+
+smlunit-test-poly.o: test/export.sml $(SRC)
+	$(POLYML) -q --error-exit < test/export.sml
+
+
+smlunit-test-poly: smlunit-test-poly.o
+	$(POLYMLC) -o $@ $^
+
+
+test: smlunit-test-poly
+	./smlunit-test-poly
+
+
+PHOENY: clean
+clean:
+	$(RM) smlunit-test-poly
+	$(RM) smlunit-test-poly.o
+
