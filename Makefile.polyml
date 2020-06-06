@@ -2,25 +2,30 @@
 POLYML ?= poly
 POLYMLC ?= polyc
 
-SRC := $(wildcard src/*.sml)
+SRC := $(wildcard src/main/*.sml)
+TEST_SRC := $(wildcard src/test/*.sml)
 
 
 all: smlunit
 
 
 .PHONY: smlunit
-smlunit: polyml_make.sml
-	$(POLYML) -q --error-exit --use ./usesig.sml < polyml_make.sml
+smlunit: $(SRC)
+	echo "" | $(POLYML) -q --error-exit --use ./usesig.sml \
+		--eval 'PolyML.make "src/main"'
 
 
-smlunit-test-poly.o: test/export.sml $(SRC)
-	$(POLYML) -q --error-exit < test/export.sml
+smlunit-test-poly.o: $(SRC) $(TEST_SRC)
+	echo "" | $(POLYML) --error-exit --use ./usesig.sml \
+		--eval 'PolyML.make "src/test"' \
+		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
 smlunit-test-poly: smlunit-test-poly.o
 	$(POLYMLC) -o $@ $^
 
 
+.PHONY: test
 test: smlunit-test-poly
 	./smlunit-test-poly
 
