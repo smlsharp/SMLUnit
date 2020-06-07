@@ -7,29 +7,29 @@ SRC := $(wildcard src/main/*)
 TEST_SRC := $(wildcard src/test/* ./basis/test/*)
 
 
-all: smlunit
+all: libsmlunit.poly
 
 
-.PHONY: smlunit
-smlunit: $(SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "src/main"'
+libsmlunit.poly: $(SRC)
+	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "src/main"' \
+		--eval 'PolyML.SaveState.saveState "$@"'
 
 
-smlunit-test-poly.o: $(SRC) $(TEST_SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "src/test"' \
+smlunit-test-poly.o: libsmlunit.poly $(TEST_SRC)
+	echo "" | $(POLYML) $(POLYMLFLAGS) \
+		--eval 'PolyML.SaveState.loadState "$<"' \
+		--eval 'PolyML.make "src/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
-smlunit-basis-test-poly.o: $(SRC) $(TEST_SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "basis/test"' \
+smlunit-basis-test-poly.o: libsmlunit.poly $(TEST_SRC)
+	echo "" | $(POLYML) $(POLYMLFLAGS) \
+		--eval 'PolyML.SaveState.loadState "$<"' \
+		--eval 'PolyML.make "basis/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
-smlunit-test-poly: smlunit-test-poly.o
-	$(POLYMLC) -o $@ $^
-
-
-smlunit-basis-test-poly: smlunit-basis-test-poly.o
+smlunit-test-poly smlunit-basis-test-poly: %: %.o
 	$(POLYMLC) -o $@ $^
 
 
@@ -41,6 +41,7 @@ test: smlunit-test-poly smlunit-basis-test-poly
 
 .PHONY: clean
 clean:
+	$(RM) libsmlunit.poly
 	$(RM) smlunit-test-poly smlunit-basis-test-poly
 	$(RM) smlunit-test-poly.o smlunit-basis-test-poly.o
 
