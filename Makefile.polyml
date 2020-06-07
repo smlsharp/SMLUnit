@@ -1,47 +1,51 @@
 
 POLYML ?= poly
 POLYMLC ?= polyc
-POLYMLFLAGS ?= -q --error-exit --use ./script/usesig.sml
+POLYMLFLAGS ?= -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
 
 SRC := $(wildcard src/main/*)
-TEST_SRC := $(wildcard src/test/* ./basis/test/*)
+TEST_SRC := $(wildcard src/test/*)
+BASIS_TEST_SRC := $(wildcard ./basis/test/*)
+
+TARGET := libsmlunit.poly
+TEST := smlunit-test-poly smlunit-basis-test-poly
+
+all: $(TARGET)
 
 
-all: libsmlunit.poly
-
-
-libsmlunit.poly: $(SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) --eval 'PolyML.make "src/main"' \
+$(TARGET): $(SRC)
+	echo "" | $(POLYML) $(POLYMLFLAGS) \
+		--eval 'PolyML.make "src/main"' \
 		--eval 'PolyML.SaveState.saveState "$@"'
 
 
-smlunit-test-poly.o: libsmlunit.poly $(TEST_SRC)
+smlunit-test-poly.o: $(TARGET) $(TEST_SRC)
 	echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.SaveState.loadState "$<"' \
 		--eval 'PolyML.make "src/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
-smlunit-basis-test-poly.o: libsmlunit.poly $(TEST_SRC)
+smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
 	echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.SaveState.loadState "$<"' \
 		--eval 'PolyML.make "basis/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
-smlunit-test-poly smlunit-basis-test-poly: %: %.o
+$(TEST): %: %.o
 	$(POLYMLC) -o $@ $^
 
 
 .PHONY: test
-test: smlunit-test-poly smlunit-basis-test-poly
+test: $(TEST)
 	./smlunit-test-poly
 	./smlunit-basis-test-poly
 
 
 .PHONY: clean
 clean:
-	$(RM) libsmlunit.poly
-	$(RM) smlunit-test-poly smlunit-basis-test-poly
-	$(RM) smlunit-test-poly.o smlunit-basis-test-poly.o
+	$(RM) $(TARGET)
+	$(RM) $(TEST)
+	$(RM) $(TEST:=.o)
 
