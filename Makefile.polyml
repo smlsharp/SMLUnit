@@ -7,8 +7,8 @@ SRC := $(wildcard src/main/*)
 TEST_SRC := $(wildcard src/test/*)
 BASIS_TEST_SRC := $(wildcard ./basis/test/*)
 
-TARGET := libsmlunit.poly
 TEST := smlunit-test-poly smlunit-basis-test-poly
+TARGET := libsmlunit.poly
 
 all: $(TARGET)
 
@@ -16,19 +16,20 @@ all: $(TARGET)
 $(TARGET): $(SRC)
 	echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.make "src/main"' \
-		--eval 'PolyML.SaveState.saveState "$@"'
+		--use export.sml \
+		--eval 'PolyML.SaveState.saveModule ("$(TARGET)", SMLUnit)'
 
 
 smlunit-test-poly.o: $(TARGET) $(TEST_SRC)
 	echo "" | $(POLYML) $(POLYMLFLAGS) \
-		--eval 'PolyML.SaveState.loadState "$<"' \
+		--eval 'PolyML.loadModule "./$(TARGET)"' \
 		--eval 'PolyML.make "src/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
 smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
 	echo "" | $(POLYML) $(POLYMLFLAGS) \
-		--eval 'PolyML.SaveState.loadState "$<"' \
+		--eval 'PolyML.loadModule "./$(TARGET)"' \
 		--eval 'PolyML.make "basis/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
@@ -45,7 +46,7 @@ test: $(TEST)
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGET)
-	$(RM) $(TEST)
-	$(RM) $(TEST:=.o)
+	-$(RM) $(TARGET)
+	-$(RM) $(TEST)
+	-$(RM) $(TEST:=.o)
 

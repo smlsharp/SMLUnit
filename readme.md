@@ -101,11 +101,11 @@ foo_test.sml
 
 ### PolyML
 
-`loadState "libsmlunit.poly"` for other project.
+`PolyML.loadModule "/path/to/libsmlunit.poly"` for other project.
 
 ```sh
 $ poly
-> PolyML.SaveState.loadState "/path/to/libsmlunit.poly";
+> PolyML.loadModule "/path/to/libsmlunit.poly";
 val it = (): unit
 >
 ```
