@@ -1,0 +1,8 @@
+$(SML_LIB)/basis/basis.mlb
+
+../main/sources.mlb
+TestAssert.sml
+TestTest.sml
+TestTextUITestRunner.sml
+TestMain.sml
+Main.sml
