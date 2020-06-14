@@ -12,12 +12,9 @@ struct
   in
   fun test () =
       let
-        val tests = TestList (TestRequiredModules.tests ())
-(*
         val tests =
             TestList
                 (TestRequiredModules.tests () @ TestOptionalModules.tests ())
-*)
       in SMLUnit.TextUITestRunner.runTest {output = TextIO.stdOut} tests
       end
   end
