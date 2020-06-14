@@ -329,8 +329,12 @@ struct
         val case01 as () = testFail [] ([], [7]) []
         val case10 as () = testFail [] ([1], []) []
         val case11 as () = test [] ([1], [7]) [1, 7] [(1, 7)]
+(* ohori: foldr does not visit any node if the two list are of unequal length
         val case12 as () = testFail [] ([1], [7, 8]) [(1, 7)]
         val case21 as () = testFail [] ([1, 2], [7]) [(1, 7)]
+*)
+        val case12 as () = testFail [] ([1], [7, 8]) []
+        val case21 as () = testFail [] ([1, 2], [7]) []
         val case22 as () = test [] ([1, 2], [7, 8]) [1, 7, 2, 8] [(2, 8), (1, 7)]
         val case33 as () = test [] ([1, 2, 3], [7, 8, 9]) [1, 7, 2, 8, 3, 9] [(3, 9), (2, 8), (1, 7)]
       in

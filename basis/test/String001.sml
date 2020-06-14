@@ -46,11 +46,10 @@ struct
       end
 
   (********************)
-
   fun sub0001 () =
       let
         val sub_0_0 = S.sub("", 0) handle Subscript => #"E"
-        val () = assertEqualChar #"E" sub_0_0
+        val () =  assertEqualChar #"E" sub_0_0
         val sub_1_m1 = S.sub("a", ~1) handle Subscript => #"E"
         val () = assertEqualChar #"E" sub_1_m1
         val sub_1_0 = S.sub("a", 0)
