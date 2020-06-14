@@ -1,4 +1,4 @@
-_require "../../src/main/SMLUnit.smi"
+_require "../../smlunit-lib.smi"
 _require "basis.smi"
 
 structure String001 =
