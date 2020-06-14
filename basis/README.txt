@@ -21,16 +21,16 @@ Usage.
 -----
 SML#:
 
- $ cd test/
- $ /usr/local/bin/smlsharp ./sources.sml
+ $ make -C test
+ $ ./test/testExec
 
 -----
 SML/NJ:
 
  $ cd test/
- $ sml
- Standard ML of New Jersey v110.72 [built: Fri Feb 05 10:57:49 2010]
- - CM.make "./sources.cm";
+ $ sml -32
+ Standard ML of New Jersey (32-bit) v110.97 [built: Tue May 12 00:13:26 2020]
+ - CM.make "sources.cm";
       :
  val it = true : bool
  - TestMain.test();
@@ -39,7 +39,7 @@ SML/NJ:
 MLton:
 
  $ cd test/
- $ /usr/local/bin/mlton sources.mlb
+ $ mlton sources.mlb
  $ ./sources
 
 On some platform, compilation by MLton fails with an error message: 
