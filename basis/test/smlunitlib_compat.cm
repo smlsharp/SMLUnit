@@ -5,9 +5,9 @@
  * @copyright 2010, Tohoku University.
  *)
 library
-        (library(../../smlunitlib.cm) - source(smlunitlib_compat.sml))
+        (library(../../smlunit-lib.cm) - source(smlunitlib_compat.sml))
         source(smlunitlib_compat.sml)
 is
         basis_compat.cm
-        ../../smlunitlib.cm
+        ../../smlunit-lib.cm
         smlunitlib_compat.sml
