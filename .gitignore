@@ -1,0 +1,6 @@
+# depend
+*.d
+# object
+*.o
+# compilation manager for sml/nj
+.cm/
