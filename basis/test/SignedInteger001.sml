@@ -66,6 +66,7 @@ struct
       (case Int.precision
         of SOME 31 => (I2i 0x3FFFFFFF, I2Int 0x3FFFFFFF)
          | SOME 32 => (I2i 0x7FFFFFFF, I2Int 0x7FFFFFFF)
+         | SOME 63 => (I2i 0x3FFFFFFFFFFFFFFF, I2Int 0x3FFFFFFFFFFFFFFF)
          | SOME 64 => (I2i 0x7FFFFFFFFFFFFFFF, I2Int 0x7FFFFFFFFFFFFFFF)
          | NONE => (I2i 0x7FFFFFFFFFFFFFFF, I2Int 0x7FFFFFFFFFFFFFFF)) (* ? *)
       handle General.Overflow =>
@@ -74,6 +75,7 @@ struct
       (case Int.precision
         of SOME 31 => (I2i ~0x40000000, I2Int ~0x40000000)
          | SOME 32 => (I2i ~0x80000000, I2Int ~0x80000000)
+         | SOME 63 => (I2i ~0x4000000000000000, I2Int ~0x4000000000000000)
          | SOME 64 => (I2i ~0x8000000000000000, I2Int ~0x8000000000000000)
          | NONE => (I2i ~0x8000000000000000, I2Int ~0x8000000000000000))(* ? *)
       handle General.Overflow =>
@@ -83,12 +85,14 @@ struct
       case I.precision
        of SOME 31 => (I2i 0x3FFFFFFF, 0x3FFFFFFF)
         | SOME 32 => (I2i 0x7FFFFFFF, 0x7FFFFFFF)
+        | SOME 63 => (I2i 0x3FFFFFFFFFFFFFFF, 0x3FFFFFFFFFFFFFFF)
         | SOME 64 => (I2i 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF)
         | NONE =>  (I2i 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF) (* ? *)
   val (minInt, minInt_L : LargeInt.int) =
       case I.precision
        of SOME 31 => (I2i ~0x40000000, ~0x40000000)
         | SOME 32 => (I2i ~0x80000000, ~0x80000000)
+        | SOME 63 => (I2i ~0x4000000000000000, ~0x4000000000000000)
         | SOME 64 => (I2i ~0x8000000000000000, ~0x8000000000000000)
         | NONE => (I2i ~0x8000000000000000, ~0x8000000000000000) (* ? *)
 

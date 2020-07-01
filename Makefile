@@ -18,7 +18,7 @@ INCDIR := $(subst :, ,$(VPATH))
 SMLFLAGS := $(patsubst %,-I%,$(INCDIR))
 
 ## source code
-SRCS := $(wildcard src/main/*.sml)
+SRCS := $(filter-out src/main/ml_bind.sml,$(wildcard src/main/*.sml))
 
 ## object file
 OBJS    := $(SRCS:.sml=.o)

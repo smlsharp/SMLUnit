@@ -4,3 +4,7 @@
 *.o
 # compilation manager for sml/nj
 .cm/
+# library
+libsmlunit.poly
+# test executable
+smlunit-test-poly

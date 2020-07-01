@@ -75,6 +75,8 @@ struct
        of 8 => (0xFF, I2W 0xFF, I2w 0xFF)
         | 31 => (0x7FFFFFFF, I2W 0x7FFFFFFF, I2w 0x7FFFFFFF)
         | 32 => (0xFFFFFFFF, I2W 0xFFFFFFFF, I2w 0xFFFFFFFF)
+        | 63 =>
+          (0x7FFFFFFFFFFFFFFF, I2W 0x7FFFFFFFFFFFFFFF, I2w 0x7FFFFFFFFFFFFFFF)
         | 64 =>
           (0xFFFFFFFFFFFFFFFF, I2W 0xFFFFFFFFFFFFFFFF, I2w 0xFFFFFFFFFFFFFFFF)
         | n => raise General.Fail ("W.wordSize = " ^ Int.toString n)

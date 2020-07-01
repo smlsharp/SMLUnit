@@ -99,3 +99,45 @@ $(SMLUNIT_LIB)/smlunit-lib.mlb
 foo_test.sml
 ```
 
+### PolyML
+
+To build, just `make`:
+
+```sh
+$ make -f Makefile.polyml
+echo "" | poly -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)' \
+        --eval 'PolyML.make "src/main"' \
+        --use export.sml \
+        --eval 'PolyML.SaveState.saveModule ("libsmlunit.poly", SMLUnit)'
+Making main
+Making SMLUnit
+..
+Created structure SMLUnit
+```
+
+Then you will get `./libsmlunit.poly` which is the collection of SMLUnit entities that can be loaded.
+
+```sh
+$ poly
+> PolyML.loadModule "/path/to/libsmlunit.poly";
+signature ASSERT =
+  sig
+..
+signature TESTRUNNER =
+  sig type parameter val runTest: parameter -> Test.test -> unit end
+val it = (): unit
+```
+
+It is possible to loading directly to the REPL:
+
+```sh
+$ poly --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
+> PolyML.make "src/main";
+Making main
+Making SMLUnit
+..
+structure SMLUnit: SMLUNIT
+val it = (): unit
+```
+
+
