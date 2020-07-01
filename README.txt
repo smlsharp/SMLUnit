@@ -39,13 +39,13 @@ Usage
 Loader scripts are provided for SML#, SML/NJ and MLton.
 
 SML#: 
-  smlunitlib.sml
+  smlunit-lib.sml
 
 SML/NJ: 
-  smlunitlib.cm
+  smlunit-lib.cm
 
 MLton: 
-  smlunitlib.mlb
+  smlunit-lib.mlb
 
 To use the SMLUnit in your project, add reference to these files in your
 project files.

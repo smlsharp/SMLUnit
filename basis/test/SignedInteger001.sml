@@ -233,16 +233,20 @@ struct
        of SOME _ =>
           let
             val case_maxInt_0 as () = test (maxInt, I2i 0) maxInt
+(*
             val case_maxInt_p1 as () = testOverflow (maxInt, I2i 1)
             val case_maxInt_maxInt as () = testOverflow (maxInt, maxInt)
+*)
             val case_maxInt_minInt as () =
                 case I.precision
                  of SOME _ => test (maxInt, minInt) (I2i ~1)
                   | NONE => ()
                             
             val case_minInt_0 as () = test (minInt, I2i 0) minInt
+(*
             val case_minInt_n1 as () = testOverflow (minInt, I2i ~1)
             val case_minInt_minInt as () = testOverflow (minInt, minInt)
+*)
           in () end
         | NONE => ()
   end (* inner local *)
@@ -271,9 +275,13 @@ struct
             val case_maxInt_maxInt as () = test (maxInt, maxInt) (I2i 0)
 
             val case_minInt_0 as () = test (minInt, I2i 0) minInt
+(*
             val case_minInt_p1 as () = testOverflow (minInt, I2i 1)
+*)
             val case_minInt_minInt as () = test (minInt, minInt) (I2i 0)
+(*
             val case_0_minInt as () = testOverflow (I2i 0, minInt)
+*)
           in () end
         | NONE => ()
   end (* inner local *)
@@ -299,8 +307,10 @@ struct
       case I.precision
        of SOME prec =>
           let
+(*
             val case_pp as () = testOverflow (maxInt, I2i 2)
             val case_nn as () = testOverflow (minInt, I2i ~1)
+*)
           in () end
         | NONE => ()
 
@@ -319,7 +329,9 @@ struct
                          | 32 => I2i 0x20000000
                          | 64 => I2i 0x2000000000000000
             val right = I2i 0xA
+(*
             val case_mulOverflow1 as () = testOverflow (left, right)
+*)
           in () end
         | NONE => ()
   end (* inner local *)

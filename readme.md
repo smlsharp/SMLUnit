@@ -15,36 +15,87 @@ What is this
 ------------------------------
 
  * A general unit testing frame work for SML system(# is not required)
- * This is imported from SML#v0.90 unofficial repository (https://github.com/smlsharp/smlsharp/tree/v0.90)
+ * This is imported from SML#v3.6.0 unofficial repository (https://github.com/smlsharp/smlsharp/tree/v3.6.0)
  * This framework support SML#, SML/NJ and MLton explicitly
  ** build scripts Makefile(for SML#), CM file(for SML/NJ) and MLB file(for MLton) are included.
 
 Setup
 ------------------------------
 
-### SML#
+### SML&#x23;
+
+Build object files with `Make`:
 
 ```sh
 $ make
+Makefile:56: Assert.d: No such file or directory
+Makefile:56: SMLUnit.d: No such file or directory
+Makefile:56: Test.d: No such file or directory
+Makefile:56: TextUITestRunner.d: No such file or directory
+ GEN [TextUITestRunner.d]
+ GEN [Test.d]
+ GEN [SMLUnit.d]
+ GEN [Assert.d]
+ SML# [Assert.o]
+ SML# [SMLUnit.o]
+ SML# [Test.o]
+ SML# [TextUITestRunner.o]
 ```
-then, you can _\_require_ smlunitlib.smi from any SML# resource files :)
+
+then, you can use `smlunit-lib` from any other projects.
+For using from other project, refer to `smlunit-lib.smi`:
+
+```sml
+(* test_foo.smi *)
+..
+(* refer to this library *)
+_require "smlunit-lib.smi"
+..
+```
+
+Build the project with `-I` and `-L` flags.
+
+```sh
+$ smlsharp -I/path/to/smlunit -L/path/to/smlunit -o test_foo test_foo.smi
+```
 
 ### SML/NJ
 
+Compile with `CM` like below:
+
 ```sh
-$ echo 'CM.stabilize true "smlunitlib.cm";' | sml
-$ echo "smlunitlib.cm smlunitlib.cm" >> $SMLNJ_ROOT/lib/pathconfig
-$ mkdir -p $SMLNJ_ROOT/lib/smlunitlib.cm
-$ cp -R src/main/.cm $SMLNJ_ROOT/lib/smlunitlib.cm/.cm
+$ LOCAL_LIB=~/.smlnj/lib
+$ mkdir -p $LOCAL_LIB
+$ echo 'CM.stabilize true "smlunit-lib.cm";' | sml
+$ echo "smlunit-lib.cm $LOCAL_LIB/smlunit-lib.cm" >> ~/.smlnj-pathconfig
+$ mkdir -p $LOCAL_LIB/smlunit-lib.cm
+$ cp -R .cm $LOCAL_LIB/smlunit-lib.cm/.cm
 ```
-use from CompileManager as '$/smlunitlib.cm'.
+
+Refer to `$/smlunit-lib.cm` from your `sources.cm`.
+
+```
+library
+is
+  $/basis.cm
+  $/smlunit-lib.cm
+  foo_test.sml
+```
 
 
 ### MLton
 
-```sh
-$ echo 'SMLUNIT_LIB /path/to/this/lib' >> $MLTON_ROOT/mlb-path-map
-```
-use from MLB as '$(SMLUNIT_LIB)/smlunitlib.mlb'.
+Insert mapping entry to `mlb-path-map`.
 
+```sh
+$ echo 'SMLUNIT_LIB /path/to/smlunitlib' >> $MLTON_ROOT/mlb-path-map
+```
+
+Refer to `$(SMLUNIT_LIB)/smlunit-lib.mlb` from your `foo_test.mlb`.
+
+```
+$(SML_LIB)/basis/basis.mlb
+$(SMLUNIT_LIB)/smlunit-lib.mlb
+foo_test.sml
+```
 

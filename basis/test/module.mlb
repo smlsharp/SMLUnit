@@ -4,7 +4,7 @@
  *)
         $(SML_LIB)/basis/basis.mlb
 
-        ../../smlunitlib.mlb
+        ../../smlunit-lib.mlb
 
         (****************************************)
         (* Tests for required modules. *)

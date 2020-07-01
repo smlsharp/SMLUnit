@@ -1,4 +1,4 @@
-_require "../../src/main/SMLUnit.smi"
+_require "../../smlunit-lib.smi"
 _require "basis.smi"
 
 functor UnsignedInteger001 (
@@ -21,9 +21,9 @@ functor UnsignedInteger001 (
     val orb : word * word -> word
     val xorb : word * word -> word
     val notb : word -> word
-    val << : word * SMLSharp.Word.word -> word
-    val >> : word * SMLSharp.Word.word -> word
-    val ~>> : word * SMLSharp.Word.word -> word
+    val << : word * Word.word -> word
+    val >> : word * Word.word -> word
+    val ~>> : word * Word.word -> word
     val + : word * word -> word
     val - : word * word -> word
     val * : word * word -> word

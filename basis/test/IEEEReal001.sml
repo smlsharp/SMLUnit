@@ -199,14 +199,16 @@ struct
 
   fun fromString_invalid1 () =
       let
-        val fromString_nodot = R.fromString "123"
-        val () = assertNone fromString_nodot
-
         val fromString_alpha = R.fromString "A"
         val () = assertNone fromString_alpha
 
         val fromString_onlyE = R.fromString "E"
         val () = assertNone fromString_onlyE
+
+(*
+        val fromString_nodot = R.fromString "123"
+        val () = assertNone fromString_nodot
+*)
       in () end
 
   end (* local *)

@@ -13,14 +13,16 @@ struct
   fun tests () =
       [
         TestLabel ("IntInf001", IntInf001.suite ()),
-        TestLabel ("IntInf101", IntInf101.suite ()),
+        TestLabel ("IntInf101", IntInf101.suite ())
+(*      ,
         TestLabel ("Array2001", Array2001.suite ()),
         TestLabel ("CharArray2001", CharArray2001.suite ()),
         TestLabel ("RealArray001", RealArray001.suite ()),
-        TestLabel ("RealArray101", RealArray101.suite ()),
+        TestLabel ("RealArray101", RealArray101.suite ())
         TestLabel ("RealVector001", RealVector001.suite ()),
         TestLabel ("RealVector101", RealVector101.suite ()),
         TestLabel ("Word8Array2001", Word8Array2001.suite ())
+*)
       ]
   end (* local *)
 

@@ -1,1 +1,2 @@
+(* Deprecated: use smlunit-lib.smi *)
 include "src/main/SMLUnit.smi"
