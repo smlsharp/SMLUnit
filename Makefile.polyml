@@ -1,14 +1,14 @@
 
-POLYML ?= poly
-POLYMLC ?= polyc
-POLYMLFLAGS ?= -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
+POLYML         ?= poly
+POLYMLC        ?= polyc
+POLYMLFLAGS    ?= -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
 
-SRC := $(wildcard src/main/*)
-TEST_SRC := $(wildcard src/test/*)
+SRC            := $(wildcard src/main/*)
+TEST_SRC       := $(wildcard src/test/*)
 BASIS_TEST_SRC := $(wildcard ./basis/test/*)
 
-TEST := smlunit-test-poly smlunit-basis-test-poly
-TARGET := libsmlunit.poly
+TEST           := smlunit-test-poly smlunit-basis-test-poly
+TARGET         := libsmlunit.poly
 
 all: $(TARGET)
 
