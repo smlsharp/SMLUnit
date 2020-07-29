@@ -129,6 +129,31 @@ $ make -f Makefile.mlton test
 Some test cases will fail.
 
 
+#### Examples
+
+This directory contains an example project to `example/`.
+
+`Makefile.mlton` have target `example` build the project.
+And the target is required by default target `all`.
+
+
+```sh
+$ make -f Makefile.mlton
+.
+.
+  [MLTON] example/sources
+$ ./example/sources
+.....
+tests = 5, failures = 0, errors = 0
+Failures:
+Errors:
+.....
+tests = 5, failures = 0, errors = 0
+Failures:
+Errors:
+```
+
+
 ### PolyML
 
 To build, just `make`:
