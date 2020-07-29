@@ -1,0 +1,80 @@
+
+MLTON       := mlton
+MLTON_FLAGS := -default-ann "nonexhaustiveMatch ignore"
+
+PREFIX      := /usr/local/mlton
+
+SMLUNITLIB_MLB      := smlunit-lib.mlb
+SMLUNITLIB_TEST_MLB := basis/test/sources.mlb
+SMLUNIT_MLBS        := $(SMLUNITLIB_MLB)      \
+                       $(SMLUNITLIB_TEST_MLB)
+
+EXAMPLES            := example/sources
+
+EXAMPLE_MLB         := $(EXAMPLES:=.mlb)
+
+SMLUNIT_LIB_DIR     := $(shell readlink -f .)
+
+
+all: typecheck_smlunitlib test example
+
+
+.PHONY: typecheck_smlunitlib
+typecheck_smlunitlib: $(SMLUNITLIB_MLB)
+	@echo "  [MLTON] typecheck $<"
+	@$(MLTON) $(MLTON_FLAGS) -stop tc $<
+
+
+$(EXAMPLE_MLB:.mlb=): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)"
+$(SMLUNITLIB_TEST_MLB:.mlb=) $(EXAMPLE_MLB:.mlb=): %: %.mlb
+	@echo "  [MLTON] $@"
+	@$(MLTON) $(MLTON_FLAGS) -output $@ $<
+
+
+$(EXAMPLE_MLB:.mlb=.mlb.d): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)"
+%.mlb.d: %.mlb
+	@echo "  [GEN] $@"
+	@$(SHELL) -ec '$(MLTON) $(MLTON_FLAGS) -stop f $< \
+		| sed -e "1i$(<:.mlb=) $@:\\\\" -e "s|.*|  & \\\\|" -e "\$$s| \\\\||" > $@; \
+		[ -s $@ ] || rm -rf $@'
+
+
+.PHONY: test
+test: typecheck_smlunitlib $(SMLUNITLIB_TEST_MLB:.mlb=)
+	$(SMLUNITLIB_TEST_MLB:.mlb=)
+
+
+.PHONY: example
+example: typecheck_smlunitlib $(EXAMPLES)
+
+
+ifeq ($(findstring clean,$(MAKECMDGOALS)),)
+include $(SMLUNIT_MLBS:.mlb=.mlb.d)
+include $(EXAMPLE_MLB:.mlb=.mlb.d)
+endif
+
+
+.PHONY: install
+install: typecheck_smlunitlib $(SMLUNITLIB_MLB)
+	@[ -e $(PREFIX)/lib/SMLUnit ] || mkdir $(PREFIX)/lib/SMLUnit
+	@$(MLTON) $(MLTON_FLAGS) -stop f $(SMLUNITLIB_MLB) | \
+	while read file; do \
+		if expr $$(readlink -f $$file) : ^$$(pwd) >/dev/null; then \
+			cp --parents $$(realpath --relative-to=$$(pwd) $$file) $(PREFIX)/lib/SMLUnit; \
+			echo -n . ; \
+		fi; \
+	done
+	@echo "Installation has been completed."
+	@echo "Please add the entry to your mlb path map file:"
+	@echo ""
+	@echo "  SMLUNIT_LIB $(PREFIX)/lib/SMLUnit"
+	@echo ""
+
+
+.PHONY: clean
+clean:
+	-$(RM) $(SMLUNIT_MLBS:.mlb=)
+	-$(RM) $(SMLUNIT_MLBS:.mlb=.mlb.d)
+	-$(RM) $(EXAMPLES)
+	-$(RM) $(EXAMPLE_MLB:.mlb=.mlb.d)
+
