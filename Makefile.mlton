@@ -57,7 +57,7 @@ endif
 .PHONY: install
 install: typecheck_smlunitlib $(SMLUNITLIB_MLB)
 	@[ -e $(PREFIX)/lib/SMLUnit ] || mkdir $(PREFIX)/lib/SMLUnit
-	@$(MLTON) $(MLTON_FLAGS) -stop f $(SMLUNITLIB_MLB) | \
+	@$(MLTON) $(MLTON_FLAGS) -stop f $(SMLUNITLIB_MLB) | sed -e "1i./smlunitlib.mlb" | \
 	while read file; do \
 		if expr $$(readlink -f $$file) : ^$$(pwd) >/dev/null; then \
 			cp --parents $$(realpath --relative-to=$$(pwd) $$file) $(PREFIX)/lib/SMLUnit; \
