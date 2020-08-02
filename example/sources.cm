@@ -9,3 +9,4 @@ is
   DICTIONARY.sig
   Dictionary.sml
   TestDictionary.sml
+  Main.sml
