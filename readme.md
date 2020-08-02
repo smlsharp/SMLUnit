@@ -192,4 +192,20 @@ structure SMLUnit: SMLUNIT
 val it = (): unit
 ```
 
+#### Install
+
+To install [SMLUnit] for [PolyML], perform `install` target.
+
+```sh
+$ make -f Makefile.polyml install
+install -D -m 644 -t /usr/local/polyml/lib libsmlunit.poly
+```
+
+You can change installation directory with `PREFIX` variable:
+
+```sh
+$ make -f Makefile.polyml PREFIX=~/.sml install
+install -D -m 644 -t /home/<user>/.sml/polyml/lib libsmlunit.poly
+```
+
 

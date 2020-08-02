@@ -3,6 +3,8 @@ POLYML         ?= poly
 POLYMLC        ?= polyc
 POLYMLFLAGS    ?= -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
 
+PREFIX         ?= /usr/local
+
 SRC            := $(wildcard src/main/*)
 TEST_SRC       := $(wildcard src/test/*)
 BASIS_TEST_SRC := $(wildcard ./basis/test/*)
@@ -39,6 +41,12 @@ smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
 
 $(TEST): %: %.o
 	$(POLYMLC) -o $@ $^
+
+
+.PHONY: install
+install: $(TARGET)
+	@[ -e $(PREFIX)/polyml/lib ] || mkdir $(PREFIX)/polyml/lib
+	install -D -m 644 -t $(PREFIX)/polyml/lib $(TARGET)
 
 
 .PHONY: test
