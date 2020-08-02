@@ -8,11 +8,14 @@ PREFIX         ?= /usr/local
 SRC            := $(wildcard src/main/*)
 TEST_SRC       := $(wildcard src/test/*)
 BASIS_TEST_SRC := $(wildcard ./basis/test/*)
+EXAMPLE_SRC    := $(wildcard ./example/*)
 
-TEST           := smlunit-test-poly smlunit-basis-test-poly
 TARGET         := libsmlunit.poly
+TEST           := smlunit-test-poly smlunit-basis-test-poly
+EXAMPLE        := smlunit-example-poly
 
-all: $(TARGET)
+
+all: $(TARGET) test
 
 
 $(TARGET): $(SRC)
@@ -39,8 +42,22 @@ smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
-$(TEST): %: %.o
-	$(POLYMLC) -o $@ $^
+$(EXAMPLE).o: $(TARGET) $(EXAMPLE_SRC)
+	@echo "  [POLYML] $@"
+	@echo "" | $(POLYML) $(POLYMLFLAGS) \
+		--eval 'PolyML.loadModule "./$(TARGET)"' \
+		--eval 'PolyML.make "example"' \
+		--eval 'PolyML.export ("$(@:.o=)", Main.main'\'')'
+
+
+$(TEST) $(EXAMPLE): %: %.o
+	@echo "  [POLYC] $@"
+	@$(POLYMLC) -o $@ $^
+
+
+.PHONY: example
+example: $(EXAMPLE)
+	./$(EXAMPLE)
 
 
 .PHONY: install
@@ -60,4 +77,6 @@ clean:
 	-$(RM) $(TARGET)
 	-$(RM) $(TEST)
 	-$(RM) $(TEST:=.o)
+	-$(RM) $(EXAMPLE)
+	-$(RM) $(EXAMPLE:=.o)
 
