@@ -160,10 +160,7 @@ To build, just `make`:
 
 ```sh
 $ make -f Makefile.polyml
-echo "" | poly -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)' \
-        --eval 'PolyML.make "src/main"' \
-        --use export.sml \
-        --eval 'PolyML.SaveState.saveModule ("libsmlunit.poly", SMLUnit)'
+  [POLYML] libsmlunit.poly
 Making main
 Making SMLUnit
 ..

@@ -14,21 +14,24 @@ all: $(TARGET)
 
 
 $(TARGET): $(SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) \
+	@echo "  [POLYML] $@"
+	@echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.make "src/main"' \
 		--use export.sml \
 		--eval 'PolyML.SaveState.saveModule ("$(TARGET)", SMLUnit)'
 
 
 smlunit-test-poly.o: $(TARGET) $(TEST_SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) \
+	@echo "  [POLYML] $@"
+	@echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.loadModule "./$(TARGET)"' \
 		--eval 'PolyML.make "src/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
 
 
 smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) \
+	@echo "  [POLYML] $@"
+	@echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.loadModule "./$(TARGET)"' \
 		--eval 'PolyML.make "basis/test"' \
 		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
