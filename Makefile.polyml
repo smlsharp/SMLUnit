@@ -14,6 +14,14 @@ TARGET         := libsmlunit.poly
 TEST           := smlunit-test-poly smlunit-basis-test-poly
 EXAMPLE        := smlunit-example-poly
 
+define export-module
+@echo "  [POLYML] $@"
+echo "" | $(POLYML) $(POLYMLFLAGS) \
+	$(foreach dep,$(3),--eval 'PolyML.loadModule "$(dep)"') \
+	--eval 'PolyML.make "$(2)"' \
+	--eval 'PolyML.export("$@", $(1))'
+endef
+
 
 all: $(TARGET) test
 
@@ -27,27 +35,15 @@ $(TARGET): $(SRC)
 
 
 smlunit-test-poly.o: $(TARGET) $(TEST_SRC)
-	@echo "  [POLYML] $@"
-	@echo "" | $(POLYML) $(POLYMLFLAGS) \
-		--eval 'PolyML.loadModule "./$(TARGET)"' \
-		--eval 'PolyML.make "src/test"' \
-		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
+	$(call export-module,TestMain.test,src/test,./$(TARGET))
 
 
 smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
-	@echo "  [POLYML] $@"
-	@echo "" | $(POLYML) $(POLYMLFLAGS) \
-		--eval 'PolyML.loadModule "./$(TARGET)"' \
-		--eval 'PolyML.make "basis/test"' \
-		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
+	$(call export-module,TestMain.test,basis/test,./$(TARGET))
 
 
 $(EXAMPLE).o: $(TARGET) $(EXAMPLE_SRC)
-	@echo "  [POLYML] $@"
-	@echo "" | $(POLYML) $(POLYMLFLAGS) \
-		--eval 'PolyML.loadModule "./$(TARGET)"' \
-		--eval 'PolyML.make "example"' \
-		--eval 'PolyML.export ("$(@:.o=)", Main.main'\'')'
+	$(call export-module,Main.main'\'',example,./$(TARGET))
 
 
 $(TEST) $(EXAMPLE): %: %.o
