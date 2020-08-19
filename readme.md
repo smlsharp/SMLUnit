@@ -208,4 +208,23 @@ $ make -f Makefile.polyml PREFIX=~/.sml install
 install -D -m 644 -t /home/<user>/.sml/polyml/lib libsmlunit.poly
 ```
 
+#### Examples
+
+To perform examples with Poly/ML, build target `example` of `Makefile.polyml`.
+
+
+```sh
+
+$ make -f Makefile.polyml example
+  [POLYML] libsmlunit.poly
+..
+  [POLYML] smlunit-example-poly.o
+..
+  [POLYC] smlunit-example-poly
+./smlunit-example-poly
+.....
+tests = 5, failures = 0, errors = 0
+Failures:
+Errors:
+```
 
