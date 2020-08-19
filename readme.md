@@ -85,19 +85,74 @@ is
 
 ### MLton
 
-Insert mapping entry to `mlb-path-map`.
+#### Install
+
+There is a `Makefile.mlton` for MLton.
+
+To install SMLUnit, `make install` with the file:
 
 ```sh
-$ echo 'SMLUNIT_LIB /path/to/smlunitlib' >> $MLTON_ROOT/mlb-path-map
+$ make -f Makefile.mlton install
 ```
 
-Refer to `$(SMLUNIT_LIB)/smlunit-lib.mlb` from your `foo_test.mlb`.
+Above command install SMLUnit to `/usr/local/mlton`.
+This install location can be set with `PREFIX` variable.
+
+```sh
+$ make -f Makefile.mlton PREFIX=~/.sml/mlton install
+```
+
+After `make install`, you need to add an entry in your mlb path mapping file:
+
+```sh
+$ echo 'SMLUNIT_LIB /path/to/$PREFIX' >> /path/to/mlb-path-map
+```
+
+
+For using SMLUnit, refer to `$(SMLUNIT_LIB)/smlunit-lib.mlb` from your mlbasis file.
 
 ```
 $(SML_LIB)/basis/basis.mlb
 $(SMLUNIT_LIB)/smlunit-lib.mlb
-foo_test.sml
+.
+.
 ```
+
+#### Test
+
+Perform unit tests for SMLUnit, execute `test` target:
+
+```sh
+$ make -f Makefile.mlton test
+```
+
+Some test cases will fail.
+
+
+#### Examples
+
+This directory contains an example project to `example/`.
+
+`Makefile.mlton` have target `example` build the project.
+And the target is required by default target `all`.
+
+
+```sh
+$ make -f Makefile.mlton
+.
+.
+  [MLTON] example/sources
+$ ./example/sources
+.....
+tests = 5, failures = 0, errors = 0
+Failures:
+Errors:
+.....
+tests = 5, failures = 0, errors = 0
+Failures:
+Errors:
+```
+
 
 ### PolyML
 
