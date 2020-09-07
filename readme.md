@@ -126,7 +126,7 @@ Perform unit tests for SMLUnit, execute `test` target:
 $ make -f Makefile.mlton test
 ```
 
-Some test cases will fail.
+In some test cases, it will fails.
 
 
 #### Examples
@@ -169,6 +169,8 @@ Created structure SMLUnit
 
 Then you will get `./libsmlunit.poly` which is the collection of SMLUnit entities that can be loaded.
 
+It is possible to load directly into the REPL:
+
 ```sh
 $ poly
 > PolyML.loadModule "/path/to/libsmlunit.poly";
@@ -180,17 +182,16 @@ signature TESTRUNNER =
 val it = (): unit
 ```
 
-It is possible to loading directly to the REPL:
+#### Test
+
+Perform unit tests for SMLUnit, execute `test` target:
 
 ```sh
-$ poly --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
-> PolyML.make "src/main";
-Making main
-Making SMLUnit
-..
-structure SMLUnit: SMLUNIT
-val it = (): unit
+$ make -f Makefile.polyml test
 ```
+
+In some test cases, it will fails.
+
 
 #### Install
 
