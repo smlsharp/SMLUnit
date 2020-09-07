@@ -8,3 +8,5 @@
 libsmlunit.poly
 # test executable
 smlunit-test-poly
+smlunit-basis-test-poly
+smlunit-example-poly

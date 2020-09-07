@@ -3,39 +3,63 @@ POLYML         ?= poly
 POLYMLC        ?= polyc
 POLYMLFLAGS    ?= -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
 
+PREFIX         ?= /usr/local
+
 SRC            := $(wildcard src/main/*)
 TEST_SRC       := $(wildcard src/test/*)
 BASIS_TEST_SRC := $(wildcard ./basis/test/*)
+EXAMPLE_SRC    := $(wildcard ./example/*)
 
-TEST           := smlunit-test-poly smlunit-basis-test-poly
 TARGET         := libsmlunit.poly
+TEST           := smlunit-test-poly smlunit-basis-test-poly
+EXAMPLE        := smlunit-example-poly
+
+define export-module
+@echo "  [POLYML] $@"
+@echo "" | $(POLYML) $(POLYMLFLAGS) \
+	$(foreach dep,$(3),--eval 'PolyML.loadModule "$(dep)"') \
+	--eval 'PolyML.make "$(2)"' \
+	--eval 'PolyML.export("$@", $(1))'
+endef
+
 
 all: $(TARGET)
 
 
 $(TARGET): $(SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) \
+	@echo "  [POLYML] $@"
+	@echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.make "src/main"' \
 		--use export.sml \
 		--eval 'PolyML.SaveState.saveModule ("$(TARGET)", SMLUnit)'
 
 
 smlunit-test-poly.o: $(TARGET) $(TEST_SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) \
-		--eval 'PolyML.loadModule "./$(TARGET)"' \
-		--eval 'PolyML.make "src/test"' \
-		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
+	$(call export-module,TestMain.test,src/test,./$(TARGET))
 
 
 smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
-	echo "" | $(POLYML) $(POLYMLFLAGS) \
-		--eval 'PolyML.loadModule "./$(TARGET)"' \
-		--eval 'PolyML.make "basis/test"' \
-		--eval 'PolyML.export ("$(@:.o=)", TestMain.test)'
+	$(call export-module,TestMain.test,basis/test,./$(TARGET))
 
 
-$(TEST): %: %.o
-	$(POLYMLC) -o $@ $^
+$(EXAMPLE).o: $(TARGET) $(EXAMPLE_SRC)
+	$(call export-module,Main.main'\'',example,./$(TARGET))
+
+
+$(TEST) $(EXAMPLE): %: %.o
+	@echo "  [POLYC] $@"
+	@$(POLYMLC) -o $@ $^
+
+
+.PHONY: example
+example: $(EXAMPLE)
+	./$(EXAMPLE)
+
+
+.PHONY: install
+install: $(TARGET)
+	@[ -e $(PREFIX)/polyml/lib ] || mkdir $(PREFIX)/polyml/lib
+	install -D -m 644 -t $(PREFIX)/polyml/lib $(TARGET)
 
 
 .PHONY: test
@@ -49,4 +73,6 @@ clean:
 	-$(RM) $(TARGET)
 	-$(RM) $(TEST)
 	-$(RM) $(TEST:=.o)
+	-$(RM) $(EXAMPLE)
+	-$(RM) $(EXAMPLE:=.o)
 

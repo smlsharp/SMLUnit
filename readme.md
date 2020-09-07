@@ -126,7 +126,7 @@ Perform unit tests for SMLUnit, execute `test` target:
 $ make -f Makefile.mlton test
 ```
 
-Some test cases will fail.
+In some test cases, it will fails.
 
 
 #### Examples
@@ -160,10 +160,7 @@ To build, just `make`:
 
 ```sh
 $ make -f Makefile.polyml
-echo "" | poly -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)' \
-        --eval 'PolyML.make "src/main"' \
-        --use export.sml \
-        --eval 'PolyML.SaveState.saveModule ("libsmlunit.poly", SMLUnit)'
+  [POLYML] libsmlunit.poly
 Making main
 Making SMLUnit
 ..
@@ -171,6 +168,8 @@ Created structure SMLUnit
 ```
 
 Then you will get `./libsmlunit.poly` which is the collection of SMLUnit entities that can be loaded.
+
+It is possible to load directly into the REPL:
 
 ```sh
 $ poly
@@ -183,16 +182,50 @@ signature TESTRUNNER =
 val it = (): unit
 ```
 
-It is possible to loading directly to the REPL:
+#### Test
+
+Perform unit tests for SMLUnit, execute `test` target:
 
 ```sh
-$ poly --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
-> PolyML.make "src/main";
-Making main
-Making SMLUnit
-..
-structure SMLUnit: SMLUNIT
-val it = (): unit
+$ make -f Makefile.polyml test
 ```
 
+In some test cases, it will fails.
+
+
+#### Install
+
+To install [SMLUnit] for [PolyML], perform `install` target.
+
+```sh
+$ make -f Makefile.polyml install
+install -D -m 644 -t /usr/local/polyml/lib libsmlunit.poly
+```
+
+You can change installation directory with `PREFIX` variable:
+
+```sh
+$ make -f Makefile.polyml PREFIX=~/.sml install
+install -D -m 644 -t /home/<user>/.sml/polyml/lib libsmlunit.poly
+```
+
+#### Examples
+
+To perform examples with Poly/ML, build target `example` of `Makefile.polyml`.
+
+
+```sh
+
+$ make -f Makefile.polyml example
+  [POLYML] libsmlunit.poly
+..
+  [POLYML] smlunit-example-poly.o
+..
+  [POLYC] smlunit-example-poly
+./smlunit-example-poly
+.....
+tests = 5, failures = 0, errors = 0
+Failures:
+Errors:
+```
 
