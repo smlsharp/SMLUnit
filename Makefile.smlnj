@@ -20,9 +20,10 @@ PREFIX          ?= /usr/local/sml
 LIBDIR          ?= lib/smlunit-lib.cm
 DOCDIR          ?= doc/smlunit-lib
 
-DEPENDS         := smlunit-lib.d src/test/sources.d
+DEPENDS         := smlunit-lib.d src/test/sources.d example/sources.d
 
-TEST_TARGET     ?= bin/TestMain.$(HEAP_SUFFIX)
+TEST_TARGET     := bin/TestMain.$(HEAP_SUFFIX)
+EXAMPLE_TARGET  := bin/ExampleMain.$(HEAP_SUFFIX)
 
 all: smlunit-lib-nodoc
 
@@ -32,10 +33,10 @@ smlunit-lib-nodoc: .cm/$(HEAP_SUFFIX)
 
 
 .PHONY: smlunit-lib
-smlunit-lib: .cm/$(HEAP_SUFFIX) doc
+smlunit-lib: smlunit-lib-nodoc doc
 
 
-.cm/$(HEAP_SUFFIX): smlunit-lib.d smlunit-lib.cm
+.cm/$(HEAP_SUFFIX): smlunit-lib.cm
 	@echo "  [SMLNJ] $@"
 	@echo 'CM.stabilize true "smlunit-lib.cm";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
 
@@ -46,13 +47,22 @@ $(DEPENDS): %.d: %.cm
 	$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(HEAP_SUFFIX)
 	@sed -i -e "s|^\([^#][^:]\+\):|\1 $@:|" $@
 
+
 ifeq (,$(findstring $(MAKECMDGOALS),clean))
   include smlunit-lib.d
 endif
 
+
 ifeq ($(MAKECMDGOALS),test)
   include src/test/sources.d
+  include example/sources.d
 endif
+
+
+ifeq ($(MAKECMDGOALS),example)
+  include example/sources.d
+endif
+
 
 .PHONY: install-nodoc
 install-nodoc: smlunit-lib-nodoc
@@ -101,7 +111,7 @@ $(TEST_TARGET): smlunit-lib-nodoc src/test/sources.cm
 
 
 .PHONY: test
-test: $(TEST_TARGET)
+test: $(TEST_TARGET) $(EXAMPLE_TARGET)
 	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$<
 
 
@@ -110,13 +120,24 @@ test-ignored: $(TEST_TARGET)
 	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$< --ignored
 
 
+$(EXAMPLE_TARGET): smlunit-lib-nodoc example/sources.cm
+	@mkdir -p bin
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) example/sources.cm Main.main $@
+
+
+.PHONY: example
+example: $(EXAMPLE_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$<
+
+
 .PHONY: clean
 clean:
 	-$(RM) $(DEPENDS)
 	-$(RM) -r doc
-	-$(RM) $(TEST_TARGET)
 	-$(RM) -r .cm
 	-$(RM) -r src/.cm
 	-$(RM) -r src/main/.cm
 	-$(RM) -r src/test/.cm
-
+	-$(RM) $(TEST_TARGET)
+	-$(RM) -r example/.cm
+	-$(RM) $(EXAMPLE_TARGET)

@@ -88,7 +88,7 @@ When the execution of the `install` or `install-nodoc` target is completed, add 
 $ echo 'smlunit-lib.cm /usr/local/smlnj/lib/smlunit-lib.cm'
 ```
 
-Or
+or
 
 ```sh
 $ echo 'smlunit-lib.cm PREFIX/lib/smlunit-lib.cm'
