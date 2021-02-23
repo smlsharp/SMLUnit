@@ -1,0 +1,122 @@
+
+SML             ?= sml
+# -32 or -64
+# empty is default
+SML_BITMODE     ?=
+SML_FLAGS       ?=
+HEAP_SUFFIX     ?= $(shell $(SML) $(SML_BITMODE) @SMLsuffix)
+
+SMLDOC          ?= smldoc
+
+MLBUILD         ?= ml-build
+MLBUILD_FLAGS   ?=
+
+MLDEPENDS       ?= ml-makedepend
+MLDEPENDS_FLAGS ?= -n
+
+SML_DULIST      ?=
+
+PREFIX          ?= /usr/local/sml
+LIBDIR          ?= lib/smlunit-lib.cm
+DOCDIR          ?= doc/smlunit-lib
+
+DEPENDS         := smlunit-lib.d src/test/sources.d
+
+TEST_TARGET     ?= bin/TestMain.$(HEAP_SUFFIX)
+
+all: smlunit-lib-nodoc
+
+
+.PHONY: smlunit-lib-nodoc
+smlunit-lib-nodoc: .cm/$(HEAP_SUFFIX)
+
+
+.PHONY: smlunit-lib
+smlunit-lib: .cm/$(HEAP_SUFFIX) doc
+
+
+.cm/$(HEAP_SUFFIX): smlunit-lib.d smlunit-lib.cm
+	@echo "  [SMLNJ] $@"
+	@echo 'CM.stabilize true "smlunit-lib.cm";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
+
+
+$(DEPENDS): %.d: %.cm
+	@echo "  [GEN] $@"
+	@touch $@
+	$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(HEAP_SUFFIX)
+	@sed -i -e "s|^\([^#][^:]\+\):|\1 $@:|" $@
+
+ifeq (,$(findstring $(MAKECMDGOALS),clean))
+  include smlunit-lib.d
+endif
+
+ifeq ($(MAKECMDGOALS),test)
+  include src/test/sources.d
+endif
+
+.PHONY: install-nodoc
+install-nodoc: smlunit-lib-nodoc
+	@install -d $(PREFIX)/$(LIBDIR)
+	@cp -R .cm $(PREFIX)/$(LIBDIR)/
+	@echo "================================================================"
+	@echo "smlunit-lib has been installed to:"
+	@echo "\t$(PREFIX)/$(LIBDIR)"
+	@echo "Add an entry to your pathconfig (e.g. ~/.smlnj-pathconfig) such like:"
+	@echo "\tsmlunit-lib.cm $(PREFIX)/$(LIBDIR)"
+	@echo "Then you can load the library like"
+	@echo "\t\"CM.make \"$$/smlunit-lib.cm\";\"."
+	@echo "================================================================"
+
+
+.PHONY: install
+install: install-nodoc install-doc
+
+
+.PHONY: doc
+doc:
+	@echo "  [SMLDoc] $@"
+	@$(RM) -r doc
+	@mkdir doc
+	@$(SMLDOC) -c UTF-8 \
+		--hidebysig \
+		--recursive \
+		--linksource \
+		-d doc \
+		smlunit-lib.cm
+
+
+.PHONY: install-doc
+install-doc: doc
+	@install -d $(PREFIX)/$(DOCDIR)
+	@cp -prT doc $(PREFIX)/$(DOCDIR)
+	@echo "================================================================"
+	@echo "Generated API Documents of SMLUnit"
+	@echo "\t$(PREFIX)/$(DOCDIR)"
+	@echo "================================================================"
+
+
+$(TEST_TARGET): smlunit-lib-nodoc src/test/sources.cm
+	@mkdir -p bin
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) src/test/sources.cm TestMain.test $@
+
+
+.PHONY: test
+test: $(TEST_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$<
+
+
+.PHONY: test-ignored
+test-ignored: $(TEST_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$< --ignored
+
+
+.PHONY: clean
+clean:
+	-$(RM) $(DEPENDS)
+	-$(RM) -r doc
+	-$(RM) $(TEST_TARGET)
+	-$(RM) -r .cm
+	-$(RM) -r src/.cm
+	-$(RM) -r src/main/.cm
+	-$(RM) -r src/test/.cm
+
