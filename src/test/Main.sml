@@ -1,2 +1,2 @@
-val _ = TestMain.test(CommandLine.name(), CommandLine.arguments())
+val _ = TestMain.test()
 val () = OS.Process.exit OS.Process.success

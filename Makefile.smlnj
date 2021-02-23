@@ -97,7 +97,7 @@ install-doc: doc
 
 $(TEST_TARGET): smlunit-lib-nodoc src/test/sources.cm
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) src/test/sources.cm TestMain.test $@
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) src/test/sources.cm TestMain.main $@
 
 
 .PHONY: test
