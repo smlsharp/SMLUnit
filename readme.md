@@ -61,25 +61,37 @@ $ smlsharp -I/path/to/smlunit -L/path/to/smlunit -o test_foo test_foo.smi
 
 ### SML/NJ
 
-Compile with `CM` like below:
+#### Install
+
+To install SMLUnit for SML/NJ, run `make install` using `Makefile.smlnj`:
 
 ```sh
-$ LOCAL_LIB=~/.smlnj/lib
-$ mkdir -p $LOCAL_LIB
-$ echo 'CM.stabilize true "smlunit-lib.cm";' | sml
-$ echo "smlunit-lib.cm $LOCAL_LIB/smlunit-lib.cm" >> ~/.smlnj-pathconfig
-$ mkdir -p $LOCAL_LIB/smlunit-lib.cm
-$ cp -R .cm $LOCAL_LIB/smlunit-lib.cm/.cm
+$ make -f Makefile.smlnj install
 ```
 
-Refer to `$/smlunit-lib.cm` from your `sources.cm`.
+To specify destination directory, run make with the variable `PREFIX`:
 
+```sh
+$ make -f Makefile.smlnj install PREFIX=~/.sml/smlnj
 ```
-library
-is
-  $/basis.cm
-  $/smlunit-lib.cm
-  foo_test.sml
+
+The `install` target use `SMLDoc` to generate the documentations of SMLUnit.
+If you do not need to generate documentation, run the `install-nodoc` target.
+
+```sh
+$ make -f Makefile.smlnj install-nodoc
+```
+
+When the execution of the `install` or `install-nodoc` target is completed, add an entry for `smlunit-lib.cm` to the pathconfig file and the installation is complete.
+
+```sh
+$ echo 'smlunit-lib.cm /usr/local/smlnj/lib/smlunit-lib.cm'
+```
+
+Or
+
+```sh
+$ echo 'smlunit-lib.cm PREFIX/lib/smlunit-lib.cm'
 ```
 
 
@@ -87,9 +99,7 @@ is
 
 #### Install
 
-There is a `Makefile.mlton` for MLton.
-
-To install SMLUnit, `make install` with the file:
+To install SMLUnit for MLton, run `make install` using `Makefile.mlton`:
 
 ```sh
 $ make -f Makefile.mlton install
