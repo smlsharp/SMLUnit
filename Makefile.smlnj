@@ -6,6 +6,9 @@ SML_BITMODE     ?=
 SML_FLAGS       ?=
 HEAP_SUFFIX     ?= $(shell $(SML) $(SML_BITMODE) @SMLsuffix)
 
+# directory of CM product
+CM_SUFFIX       := $(shell $(SML) $(SML_BITMODE) < script/suffix.sml 2>&1 >/dev/null)
+
 SMLDOC          ?= smldoc
 
 MLBUILD         ?= ml-build
@@ -29,14 +32,14 @@ all: smlunit-lib-nodoc
 
 
 .PHONY: smlunit-lib-nodoc
-smlunit-lib-nodoc: .cm/$(HEAP_SUFFIX)
+smlunit-lib-nodoc: .cm/$(CM_SUFFIX)
 
 
 .PHONY: smlunit-lib
 smlunit-lib: smlunit-lib-nodoc doc
 
 
-.cm/$(HEAP_SUFFIX): smlunit-lib.cm
+.cm/$(CM_SUFFIX): smlunit-lib.cm
 	@echo "  [SMLNJ] $@"
 	@echo 'CM.stabilize true "smlunit-lib.cm";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
 
@@ -44,25 +47,15 @@ smlunit-lib: smlunit-lib-nodoc doc
 $(DEPENDS): %.d: %.cm
 	@echo "  [GEN] $@"
 	@touch $@
-	$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(HEAP_SUFFIX)
+	$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(CM_SUFFIX)
 	@sed -i -e "s|^\([^#][^:]\+\):|\1 $@:|" $@
 
 
-ifeq (,$(findstring $(MAKECMDGOALS),clean))
+ifneq (clean,$(findstring clean,$(MAKECMDGOALS)))
   include smlunit-lib.d
-endif
-
-
-ifeq ($(MAKECMDGOALS),test)
   include src/test/sources.d
   include example/sources.d
 endif
-
-
-ifeq ($(MAKECMDGOALS),example)
-  include example/sources.d
-endif
-
 
 .PHONY: install-nodoc
 install-nodoc: smlunit-lib-nodoc
@@ -105,9 +98,9 @@ install-doc: doc
 	@echo "================================================================"
 
 
-$(TEST_TARGET): smlunit-lib-nodoc src/test/sources.cm
+$(TEST_TARGET): .cm/$(CM_SUFFIX) src/test/sources.cm
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) src/test/sources.cm TestMain.main $@
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) src/test/sources.cm TestMain.main $(basename $@)
 
 
 .PHONY: test
@@ -120,9 +113,9 @@ test-ignored: $(TEST_TARGET)
 	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$< --ignored
 
 
-$(EXAMPLE_TARGET): smlunit-lib-nodoc example/sources.cm
+$(EXAMPLE_TARGET): .cm/$(CM_SUFFIX) example/sources.cm
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) example/sources.cm Main.main $@
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) example/sources.cm Main.main $(basename $@)
 
 
 .PHONY: example
