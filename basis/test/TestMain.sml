@@ -10,13 +10,17 @@ struct
   local
     open SMLUnit.Test
   in
-  fun test () =
+  fun main (_: string, _: string list) =
       let
         val tests =
             TestList
                 (TestRequiredModules.tests () @ TestOptionalModules.tests ())
       in SMLUnit.TextUITestRunner.runTest {output = TextIO.stdOut} tests
+       ; OS.Process.success
       end
   end
+
+  fun test () =
+    ignore (main (CommandLine.name(), CommandLine.arguments()))
 
 end

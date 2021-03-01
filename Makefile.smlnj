@@ -23,9 +23,10 @@ PREFIX          ?= /usr/local/sml
 LIBDIR          ?= lib/smlunit-lib.cm
 DOCDIR          ?= doc/smlunit-lib
 
-DEPENDS         := smlunit-lib.d src/test/sources.d example/sources.d
+DEPENDS         := smlunit-lib.d src/test/sources.d basis/test/sources.d example/sources.d
 
 TEST_TARGET     := bin/TestMain.$(HEAP_SUFFIX)
+BASIS_TEST_TARGET := bin/BasisTestMain.$(HEAP_SUFFIX)
 EXAMPLE_TARGET  := bin/ExampleMain.$(HEAP_SUFFIX)
 
 all: smlunit-lib-nodoc
@@ -103,14 +104,15 @@ $(TEST_TARGET): .cm/$(CM_SUFFIX) src/test/sources.cm
 	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) src/test/sources.cm TestMain.main $(basename $@)
 
 
+$(BASIS_TEST_TARGET): .cm/$(CM_SUFFIX) basis/test/sources.cm
+	@mkdir -p bin
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) basis/test/sources.cm TestMain.main $(basename $@)
+
+
 .PHONY: test
-test: $(TEST_TARGET) $(EXAMPLE_TARGET)
-	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$<
-
-
-.PHONY: test-ignored
-test-ignored: $(TEST_TARGET)
-	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$< --ignored
+test: $(TEST_TARGET) $(BASIS_TEST_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$(TEST_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$(BASIS_TEST_TARGET)
 
 
 $(EXAMPLE_TARGET): .cm/$(CM_SUFFIX) example/sources.cm
@@ -132,5 +134,7 @@ clean:
 	-$(RM) -r src/main/.cm
 	-$(RM) -r src/test/.cm
 	-$(RM) $(TEST_TARGET)
+	-$(RM) -r basis/test/.cm
+	-$(RM) $(BASIS_TEST_TARGET)
 	-$(RM) -r example/.cm
 	-$(RM) $(EXAMPLE_TARGET)
