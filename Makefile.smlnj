@@ -68,10 +68,10 @@ install-nodoc: smlunit-lib-nodoc
 	@echo "================================================================"
 	@echo "smlunit-lib has been installed to:"
 	@echo "\t$(PREFIX)/$(LIBDIR)"
-	@echo "Add an entry to your pathconfig (e.g. ~/.smlnj-pathconfig) such like:"
+	@echo "Next, add an entry to your pathconfig (e.g. ~/.smlnj-pathconfig) such like:"
 	@echo "\tsmlunit-lib.cm $(PREFIX)/$(LIBDIR)"
 	@echo "Then you can load the library like"
-	@echo "\t\"CM.make \"$$/smlunit-lib.cm\";\"."
+	@echo "\t- CM.make \"$$/smlunit-lib.cm\";"
 	@echo "================================================================"
 
 
