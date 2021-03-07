@@ -75,14 +75,14 @@ To specify destination directory, run make with the variable `PREFIX`:
 $ make -f Makefile.smlnj install PREFIX=~/.sml/smlnj
 ```
 
-The `install` target use `SMLDoc` to generate the documentations of SMLUnit.
+The `install` target uses `SMLDoc` to generate the documentations of SMLUnit.
 If you do not need to generate documentation, run the `install-nodoc` target.
 
 ```sh
 $ make -f Makefile.smlnj install-nodoc
 ```
 
-When the execution of the `install` or `install-nodoc` target is completed, add an entry for `smlunit-lib.cm` to the pathconfig file and the installation is complete.
+After execution `install` or `install-nodoc` target, add an entry for `smlunit-lib.cm` to the pathconfig file to complete the installation.
 
 ```sh
 $ echo 'smlunit-lib.cm /usr/local/smlnj/lib/smlunit-lib.cm'

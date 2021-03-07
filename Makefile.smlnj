@@ -34,7 +34,7 @@ TEST_TARGET       := bin/TestMain.$(HEAP_SUFFIX)
 BASIS_TEST_TARGET := bin/BasisTestMain.$(HEAP_SUFFIX)
 EXAMPLE_TARGET    := bin/ExampleMain.$(HEAP_SUFFIX)
 
-all: smlunit-lib-nodoc
+all: smlunit-lib
 
 
 .PHONY: smlunit-lib-nodoc
