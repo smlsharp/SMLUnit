@@ -33,16 +33,16 @@ all: smlunit-lib-nodoc
 
 
 .PHONY: smlunit-lib-nodoc
-smlunit-lib-nodoc: .cm/$(CM_SUFFIX)
+smlunit-lib-nodoc: .cm/$(CM_SUFFIX)/smlunit-lib.cm
 
 
 .PHONY: smlunit-lib
 smlunit-lib: smlunit-lib-nodoc doc
 
 
-.cm/$(CM_SUFFIX): smlunit-lib.cm
+.cm/$(CM_SUFFIX)/%.cm: %.cm
 	@echo "  [SMLNJ] $@"
-	@echo 'CM.stabilize true "smlunit-lib.cm";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
+	@echo 'CM.stabilize true "$<";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
 
 
 $(DEPENDS): %.d: %.cm
@@ -73,7 +73,7 @@ install-nodoc: smlunit-lib-nodoc
 
 
 .PHONY: install
-install: install-nodoc install-doc
+install: install-doc install-nodoc
 
 
 .PHONY: doc
@@ -99,14 +99,14 @@ install-doc: doc
 	@echo "================================================================"
 
 
-$(TEST_TARGET): .cm/$(CM_SUFFIX) src/test/sources.cm
+$(TEST_TARGET): src/test/.cm/$(CM_SUFFIX)
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) src/test/sources.cm TestMain.main $(basename $@)
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/$(CM_SUFFIX),%/sources.cm,$<) TestMain.main $(basename $@)
 
 
-$(BASIS_TEST_TARGET): .cm/$(CM_SUFFIX) basis/test/sources.cm
+$(BASIS_TEST_TARGET): basis/test/.cm/$(CM_SUFFIX)
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) basis/test/sources.cm TestMain.main $(basename $@)
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/$(CM_SUFFIX),%/sources.cm,$<) TestMain.main $(basename $@)
 
 
 .PHONY: test
@@ -115,9 +115,9 @@ test: $(TEST_TARGET) $(BASIS_TEST_TARGET)
 	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$(BASIS_TEST_TARGET)
 
 
-$(EXAMPLE_TARGET): .cm/$(CM_SUFFIX) example/sources.cm
+$(EXAMPLE_TARGET): example/.cm/$(CM_SUFFIX)
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) example/sources.cm Main.main $(basename $@)
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/amd64-unix,%/sources.cm,$<) Main.main $(basename $@)
 
 
 .PHONY: example
