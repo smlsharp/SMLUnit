@@ -23,11 +23,16 @@ PREFIX          ?= /usr/local/sml
 LIBDIR          ?= lib/smlunit-lib.cm
 DOCDIR          ?= doc/smlunit-lib
 
-DEPENDS         := smlunit-lib.d src/test/sources.d basis/test/sources.d example/sources.d
+SOURCES_CM      := smlunit-lib.cm \
+                   src/test/sources.cm \
+                   basis/test/sources.cm \
+                   example/sources.cm
 
-TEST_TARGET     := bin/TestMain.$(HEAP_SUFFIX)
+DEPENDS         := $(SOURCES_CM:.cm=.d)
+
+TEST_TARGET       := bin/TestMain.$(HEAP_SUFFIX)
 BASIS_TEST_TARGET := bin/BasisTestMain.$(HEAP_SUFFIX)
-EXAMPLE_TARGET  := bin/ExampleMain.$(HEAP_SUFFIX)
+EXAMPLE_TARGET    := bin/ExampleMain.$(HEAP_SUFFIX)
 
 all: smlunit-lib-nodoc
 
@@ -53,9 +58,7 @@ $(DEPENDS): %.d: %.cm
 
 
 ifneq (clean,$(findstring clean,$(MAKECMDGOALS)))
-  include smlunit-lib.d
-  include src/test/sources.d
-  include example/sources.d
+  include $(DEPENDS)
 endif
 
 .PHONY: install-nodoc
