@@ -10,6 +10,7 @@ HEAP_SUFFIX     ?= $(shell $(SML) $(SML_BITMODE) @SMLsuffix)
 CM_SUFFIX       := $(shell $(SML) $(SML_BITMODE) < script/suffix.sml 2>&1 >/dev/null)
 
 SMLDOC          ?= smldoc
+SMLDOC_ARGFILE  := src/smldoc.cfg
 
 MLBUILD         ?= ml-build
 MLBUILD_FLAGS   ?=
@@ -81,21 +82,16 @@ install: install-doc install-nodoc
 
 .PHONY: doc
 doc:
-	@echo "  [SMLDoc] $@"
-	@$(RM) -r doc
-	@mkdir doc
-	@$(SMLDOC) -c UTF-8 \
-		--hidebysig \
-		--recursive \
-		--linksource \
-		-d doc \
-		smlunit-lib.cm
+	@echo "  [SMLDoc]"
+	@$(RM) -r $(DOCDIR)
+	@install -d $(DOCDIR)
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d "$(DOCDIR)"
 
 
 .PHONY: install-doc
 install-doc: doc
 	@install -d $(PREFIX)/$(DOCDIR)
-	@cp -prT doc $(PREFIX)/$(DOCDIR)
+	@cp -prT $(DOCDIR) $(PREFIX)/$(DOCDIR)
 	@echo "================================================================"
 	@echo "Generated API Documents of SMLUnit"
 	@echo "\t$(PREFIX)/$(DOCDIR)"
@@ -131,7 +127,7 @@ example: $(EXAMPLE_TARGET)
 .PHONY: clean
 clean:
 	-$(RM) $(DEPENDS)
-	-$(RM) -r doc
+	-$(RM) -r $(DOCDIR)
 	-$(RM) -r .cm
 	-$(RM) -r src/.cm
 	-$(RM) -r src/main/.cm
