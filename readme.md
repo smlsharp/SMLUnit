@@ -63,35 +63,55 @@ $ smlsharp -I/path/to/smlunit -L/path/to/smlunit -o test_foo test_foo.smi
 
 #### Install
 
-To install SMLUnit for SML/NJ, run `make install` using `Makefile.smlnj`:
+To install SMLUnit for SML/NJ, run `make install` with `Makefile.smlnj`:
 
 ```sh
 $ make -f Makefile.smlnj install
 ```
 
-To specify destination directory, run make with the variable `PREFIX`:
+To specify the directory to install to, run `make` with the variable `PREFIX`:
 
 ```sh
 $ make -f Makefile.smlnj install PREFIX=~/.sml/smlnj
 ```
 
-The `install` target uses `SMLDoc` to generate the documentations of SMLUnit.
+The `install` target uses `SMLDoc` to generate the documentations for SMLUnit.
 If you do not need to generate documentation, run the `install-nodoc` target.
 
 ```sh
 $ make -f Makefile.smlnj install-nodoc
 ```
 
-After execution `install` or `install-nodoc` target, add an entry for `smlunit-lib.cm` to the pathconfig file to complete the installation.
+After running the `install` or `install-nodoc` target, add an entry for `smlunit-lib.cm` to the pathconfig file to complete the installation.
 
 ```sh
-$ echo 'smlunit-lib.cm /usr/local/smlnj/lib/smlunit-lib.cm'
+$ echo 'smlunit-lib.cm /usr/local/smlnj/lib/smlunit-lib.cm' >> ~/.smlnj-pathconfig
 ```
 
 or
 
 ```sh
-$ echo 'smlunit-lib.cm PREFIX/lib/smlunit-lib.cm'
+$ echo 'smlunit-lib.cm PREFIX/lib/smlunit-lib.cm' >> ~/.smlnj-pathconfig
+```
+
+
+#### Test
+
+To run SMLUnit unit tests, run the `test` target:
+
+```sh
+$ make -f Makefile.smlnj test
+```
+
+Depending on the test case, it will fails.
+
+
+#### Examples
+
+To run the example program, run `example` target:
+
+```sh
+$ make -f Makefile.smlnj example
 ```
 
 
@@ -99,7 +119,7 @@ $ echo 'smlunit-lib.cm PREFIX/lib/smlunit-lib.cm'
 
 #### Install
 
-To install SMLUnit for MLton, run `make install` using `Makefile.mlton`:
+To install SMLUnit for MLton, run `make install` with `Makefile.mlton`:
 
 ```sh
 $ make -f Makefile.mlton install
@@ -112,7 +132,7 @@ This install location can be set with `PREFIX` variable.
 $ make -f Makefile.mlton PREFIX=~/.sml/mlton install
 ```
 
-After `make install`, you need to add an entry in your mlb path mapping file:
+After running the `install` target, add an entry for `SMLUNIT_LIB` to your mlb path mapping file:
 
 ```sh
 $ echo 'SMLUNIT_LIB /path/to/$PREFIX' >> /path/to/mlb-path-map
@@ -130,37 +150,21 @@ $(SMLUNIT_LIB)/smlunit-lib.mlb
 
 #### Test
 
-Perform unit tests for SMLUnit, execute `test` target:
+To run SMLUnit unit test, run the `test` target:
 
 ```sh
 $ make -f Makefile.mlton test
 ```
 
-In some test cases, it will fails.
+Depending on the test case, it will fails.
 
 
 #### Examples
 
-This directory contains an example project to `example/`.
-
-`Makefile.mlton` have target `example` build the project.
-And the target is required by default target `all`.
-
+To run the example program, run `example` target:
 
 ```sh
-$ make -f Makefile.mlton
-.
-.
-  [MLTON] example/sources
-$ ./example/sources
-.....
-tests = 5, failures = 0, errors = 0
-Failures:
-Errors:
-.....
-tests = 5, failures = 0, errors = 0
-Failures:
-Errors:
+$ make -f Makefile.smlnj example
 ```
 
 
@@ -194,7 +198,7 @@ val it = (): unit
 
 #### Test
 
-Perform unit tests for SMLUnit, execute `test` target:
+Execute unit tests for SMLUnit, run `test` target:
 
 ```sh
 $ make -f Makefile.polyml test
@@ -221,8 +225,7 @@ install -D -m 644 -t /home/<user>/.sml/polyml/lib libsmlunit.poly
 
 #### Examples
 
-To perform examples with Poly/ML, build target `example` of `Makefile.polyml`.
-
+To run examples with Poly/ML, run the `example` target:
 
 ```sh
 
