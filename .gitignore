@@ -5,6 +5,8 @@
 # sml/nj
 bin/
 .cm/
+# mlton
+bin/.smlunit-lib
 # library
 libsmlunit.poly
 # test executable
