@@ -58,7 +58,7 @@ $(DEPENDS): %.d: %.cm
 	@sed -i -e "s|^\([^#][^:]\+\):|\1 $@:|" $@
 
 
-ifneq (clean,$(findstring clean,$(MAKECMDGOALS)))
+ifeq (,$(findstring clean,$(MAKECMDGOALS)))
   include $(DEPENDS)
 endif
 
