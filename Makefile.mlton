@@ -14,6 +14,9 @@ SMLUNITLIB_TEST_MLB := basis/test/sources.mlb
 SMLUNIT_MLBS        := $(SMLUNITLIB_MLB)      \
                        $(SMLUNITLIB_TEST_MLB)
 
+DEPENDS             := $(SMLUNIT_MLBS:.mlb=.mlb.d) \
+                       $(EXAMPLE_MLB:.mlb=.mlb.d)
+
 EXAMPLES            := example/sources
 
 EXAMPLE_MLB         := $(EXAMPLES:=.mlb)
@@ -54,8 +57,7 @@ example: typecheck_smlunitlib $(EXAMPLES)
 
 
 ifeq ($(findstring clean,$(MAKECMDGOALS)),)
-include $(SMLUNIT_MLBS:.mlb=.mlb.d)
-include $(EXAMPLE_MLB:.mlb=.mlb.d)
+  include $(DEPENDS)
 endif
 
 
@@ -101,8 +103,7 @@ install-doc: doc
 .PHONY: clean
 clean:
 	-$(RM) -r $(DOCDIR)
+	-$(RM) $(DEPENDS)
 	-$(RM) $(SMLUNIT_MLBS:.mlb=)
-	-$(RM) $(SMLUNIT_MLBS:.mlb=.mlb.d)
 	-$(RM) $(EXAMPLES)
-	-$(RM) $(EXAMPLE_MLB:.mlb=.mlb.d)
 
