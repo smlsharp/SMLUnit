@@ -1,8 +1,13 @@
 
-MLTON       := mlton
-MLTON_FLAGS := -default-ann "nonexhaustiveMatch ignore"
+MLTON               := mlton
+MLTON_FLAGS         := -default-ann "nonexhaustiveMatch ignore"
 
-PREFIX      := /usr/local/mlton
+PREFIX              ?= /usr/local/mlton
+LIBDIR              ?= lib/SMLUnit
+DOCDIR              ?= doc/smlunit-lib
+
+SMLDOC              ?= smldoc
+SMLDOC_ARGFILE      := src/smldoc.cfg
 
 SMLUNITLIB_MLB      := smlunit-lib.mlb
 SMLUNITLIB_TEST_MLB := basis/test/sources.mlb
@@ -54,25 +59,48 @@ include $(EXAMPLE_MLB:.mlb=.mlb.d)
 endif
 
 
-.PHONY: install
-install: typecheck_smlunitlib $(SMLUNITLIB_MLB)
-	@[ -e $(PREFIX)/lib/SMLUnit ] || mkdir $(PREFIX)/lib/SMLUnit
+.PHONY: install-nodoc
+install-nodoc: typecheck_smlunitlib $(SMLUNITLIB_MLB)
+	@install -d $(PREFIX)/$(LIBDIR)
 	@$(MLTON) $(MLTON_FLAGS) -stop f $(SMLUNITLIB_MLB) | sed -e "1i./smlunitlib.mlb" | \
 	while read file; do \
 		if expr $$(readlink -f $$file) : ^$$(pwd) >/dev/null; then \
-			cp --parents $$(realpath --relative-to=$$(pwd) $$file) $(PREFIX)/lib/SMLUnit; \
+			cp --parents $$(realpath --relative-to=$$(pwd) $$file) $(PREFIX)/$(LIBDIR); \
 			echo -n . ; \
 		fi; \
 	done
 	@echo "Installation has been completed."
 	@echo "Please add the entry to your mlb path map file:"
 	@echo ""
-	@echo "  SMLUNIT_LIB $(PREFIX)/lib/SMLUnit"
+	@echo "  SMLUNIT_LIB $(PREFIX)/$(LIBDIR)"
 	@echo ""
+
+
+.PHONY: install
+install: install-doc install-nodoc
+
+
+.PHONY: doc
+doc:
+	@echo "  [SMLDoc]"
+	@$(RM) -r $(DOCDIR)
+	@install -d $(DOCDIR)
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d "$(DOCDIR)"
+
+
+.PHONY: install-doc
+install-doc: doc
+	@install -d $(PREFIX)/$(DOCDIR)
+	@cp -prT $(DOCDIR) $(PREFIX)/$(DOCDIR)
+	@echo "================================================================"
+	@echo "Generated API Documents of SMLUnit"
+	@echo "\t$(PREFIX)/$(DOCDIR)"
+	@echo "================================================================"
 
 
 .PHONY: clean
 clean:
+	-$(RM) -r $(DOCDIR)
 	-$(RM) $(SMLUNIT_MLBS:.mlb=)
 	-$(RM) $(SMLUNIT_MLBS:.mlb=.mlb.d)
 	-$(RM) $(EXAMPLES)
