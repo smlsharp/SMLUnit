@@ -1,18 +1,23 @@
 
-POLYML         ?= poly
-POLYMLC        ?= polyc
-POLYMLFLAGS    ?= -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
+POLYML         := poly
+POLYMLC        := polyc
+POLYMLFLAGS    := -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
 
-PREFIX         ?= /usr/local
+PREFIX         := /usr/local/polyml
+LIBDIR         := lib/smlunit-lib
+DOCDIR         := doc/smlunit-lib
 
-SRC            := $(wildcard src/main/*)
-TEST_SRC       := $(wildcard src/test/*)
-BASIS_TEST_SRC := $(wildcard ./basis/test/*)
-EXAMPLE_SRC    := $(wildcard ./example/*)
+SMLDOC         := smldoc
+SMLDOC_ARGFILE := src/smldoc.cfg
 
-TARGET         := libsmlunit.poly
-TEST           := smlunit-test-poly smlunit-basis-test-poly
-EXAMPLE        := smlunit-example-poly
+SRC            := $(wildcard src/main/*.sml)
+TEST_SRC       := $(wildcard src/test/*.sml)
+BASIS_TEST_SRC := $(wildcard basis/test/*.sml)
+EXAMPLE_SRC    := $(wildcard example/*.sml)
+
+SMLUNIT_LIB    := smlunit-lib.poly
+TEST           := bin/smlunit-test-poly bin/smlunit-basis-test-poly
+EXAMPLE        := bin/smlunit-example-poly
 
 define export-module
 @echo "  [POLYML] $@"
@@ -23,27 +28,35 @@ define export-module
 endef
 
 
-all: $(TARGET)
+all: smlunit-lib
 
 
-$(TARGET): $(SRC)
+.PHONY: smlunit-lib-nodoc
+smlunit-lib-nodoc: $(SMLUNIT_LIB)
+
+
+.PHONY: smlunit-lib
+smlunit-lib: smlunit-lib-nodoc doc
+
+
+$(SMLUNIT_LIB): export.sml $(SRC)
 	@echo "  [POLYML] $@"
 	@echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.make "src/main"' \
 		--use export.sml \
-		--eval 'PolyML.SaveState.saveModule ("$(TARGET)", SMLUnit)'
+		--eval 'PolyML.SaveState.saveModule ("$(SMLUNIT_LIB)", SMLUnit)'
 
 
-smlunit-test-poly.o: $(TARGET) $(TEST_SRC)
-	$(call export-module,TestMain.test,src/test,./$(TARGET))
+bin/smlunit-test-poly.o: $(SMLUNIT_LIB) $(TEST_SRC)
+	$(call export-module,TestMain.test,src/test,./$<)
 
 
-smlunit-basis-test-poly.o: $(TARGET) $(BASIS_TEST_SRC)
-	$(call export-module,TestMain.test,basis/test,./$(TARGET))
+bin/smlunit-basis-test-poly.o: $(SMLUNIT_LIB) $(BASIS_TEST_SRC)
+	$(call export-module,TestMain.test,basis/test,./$<)
 
 
-$(EXAMPLE).o: $(TARGET) $(EXAMPLE_SRC)
-	$(call export-module,Main.main'\'',example,./$(TARGET))
+$(EXAMPLE).o: $(SMLUNIT_LIB) $(EXAMPLE_SRC)
+	$(call export-module,Main.main'\'',example,./$<)
 
 
 $(TEST) $(EXAMPLE): %: %.o
@@ -51,26 +64,57 @@ $(TEST) $(EXAMPLE): %: %.o
 	@$(POLYMLC) -o $@ $^
 
 
-.PHONY: example
-example: $(EXAMPLE)
-	./$(EXAMPLE)
+.PHONY: install-nodoc
+install-nodoc: smlunit-lib-nodoc
+	@install -D -m 644 -t $(PREFIX)/$(LIBDIR) $(SMLUNIT_LIB)
+	@echo "================================================================"
+	@echo "smlunit-lib has been installed to:"
+	@echo "\t$(PREFIX)/$(LIBDIR)/$(SMLUNIT_LIB)"
+	@echo "================================================================"
 
 
 .PHONY: install
-install: $(TARGET)
-	@[ -e $(PREFIX)/polyml/lib ] || mkdir $(PREFIX)/polyml/lib
-	install -D -m 644 -t $(PREFIX)/polyml/lib $(TARGET)
+install: install-doc install-nodoc
+
+
+.PHONY: doc
+doc:
+	@echo "  [SMLDoc]"
+	@$(RM) -r $(DOCDIR)
+	@install -d $(DOCDIR)
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d "$(DOCDIR)"
+
+
+.PHONY: install-doc
+install-doc: doc
+	@install -d $(PREFIX)/$(DOCDIR)
+	@cp -prT $(DOCDIR) $(PREFIX)/$(DOCDIR)
+	@echo "================================================================"
+	@echo "Generated API Documents of SMLUnit"
+	@echo "\t$(PREFIX)/$(DOCDIR)"
+	@echo "================================================================"
 
 
 .PHONY: test
 test: $(TEST)
-	./smlunit-test-poly
-	./smlunit-basis-test-poly
+	@for exe in $^;do \
+		echo "$${exe}" ; \
+		$${exe} ; \
+	done
+
+
+.PHONY: example
+example: $(EXAMPLE)
+	@for exe in $^;do \
+		echo "$${exe}" ; \
+		$${exe} ; \
+	done
 
 
 .PHONY: clean
 clean:
-	-$(RM) $(TARGET)
+	-$(RM) $(SMLUNIT_LIB)
+	-$(RM) -r $(DOCDIR)
 	-$(RM) $(TEST)
 	-$(RM) $(TEST:=.o)
 	-$(RM) $(EXAMPLE)
