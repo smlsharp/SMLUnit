@@ -2,25 +2,25 @@
 MLTON               := mlton
 MLTON_FLAGS         := -default-ann "nonexhaustiveMatch ignore"
 
-PREFIX              ?= /usr/local/mlton
-LIBDIR              ?= lib/SMLUnit
-DOCDIR              ?= doc/smlunit-lib
+PREFIX              := /usr/local/mlton
+LIBDIR              := lib/SMLUnit
+DOCDIR              := doc/smlunit-lib
 
-SMLDOC              ?= smldoc
+SMLDOC              := smldoc
 SMLDOC_ARGFILE      := src/smldoc.cfg
 
 TYPECHECK_DUMMY     := bin/.smlunit-lib
 
-SMLUNITLIB_TEST_MLB := basis/test/sources.mlb
+TEST_MLB            := src/test/sources.mlb \
+                       basis/test/sources.mlb
+
+EXAMPLE_MLB         := example/sources.mlb
+
 SMLUNIT_MLBS        := smlunit-lib.mlb \
-                       $(SMLUNITLIB_TEST_MLB)
+                       $(TEST_MLB) \
+                       $(EXAMPLE_MLB)
 
-EXAMPLES            := example/sources
-
-EXAMPLE_MLB         := $(EXAMPLES:=.mlb)
-
-DEPENDS             := $(SMLUNIT_MLBS:.mlb=.mlb.d) \
-                       $(EXAMPLE_MLB:.mlb=.mlb.d)
+DEPENDS             := $(SMLUNIT_MLBS:.mlb=.mlb.d)
 
 SMLUNIT_LIB_DIR     := $(shell readlink -f .)
 
@@ -101,21 +101,24 @@ install-doc: doc
 
 
 $(EXAMPLE_MLB:.mlb=): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)"
-$(SMLUNITLIB_TEST_MLB:.mlb=) $(EXAMPLE_MLB:.mlb=): %: %.mlb
+$(TEST_MLB:.mlb=) $(EXAMPLE_MLB:.mlb=): %: %.mlb
 	@echo "  [MLTON] $@"
 	@$(MLTON) $(MLTON_FLAGS) -output $@ $<
 
 
 .PHONY: test
-test: $(SMLUNITLIB_TEST_MLB:.mlb=)
-	$(SMLUNITLIB_TEST_MLB:.mlb=)
+test: $(TEST_MLB:.mlb=)
+	@for exe in $^;do \
+		echo "$${exe}" ; \
+		$${exe} ; \
+	done
 
 
 .PHONY: example
-example: $(EXAMPLES)
-	@for ex in $(EXAMPLES);do \
-		echo "$${ex}" ; \
-		$${ex}; \
+example: $(EXAMPLE_MLB:.mlb=)
+	@for exe in $^;do \
+		echo "$${exe}" ; \
+		$${exe} ; \
 	done
 
 
@@ -124,6 +127,5 @@ clean:
 	-$(RM) $(TYPECHECK_DUMMY)
 	-$(RM) -r $(DOCDIR)
 	-$(RM) $(DEPENDS)
-	-$(RM) $(SMLUNIT_MLBS:.mlb=)
-	-$(RM) $(EXAMPLES)
+	-$(RM) $(filter-out smlunit-lib,$(SMLUNIT_MLBS:.mlb=))
 
