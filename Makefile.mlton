@@ -1,6 +1,6 @@
 
 MLTON               := mlton
-MLTON_FLAGS         := -default-ann "nonexhaustiveMatch ignore"
+MLTON_FLAGS         := 
 
 PREFIX              := /usr/local/mlton
 LIBDIR              := lib/SMLUnit
