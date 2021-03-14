@@ -100,12 +100,12 @@ install-doc: doc
 
 $(TEST_TARGET): src/test/.cm/$(CM_SUFFIX)
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/$(CM_SUFFIX),%/sources.cm,$<) TestMain.main $(basename $@)
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(<:%/.cm/$(CM_SUFFIX)=%/sources.cm) TestMain.main $(basename $@)
 
 
 $(BASIS_TEST_TARGET): basis/test/.cm/$(CM_SUFFIX)
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/$(CM_SUFFIX),%/sources.cm,$<) TestMain.main $(basename $@)
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(<:%/.cm/$(CM_SUFFIX)=%/sources.cm) TestMain.main $(basename $@)
 
 
 .PHONY: test
