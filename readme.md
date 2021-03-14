@@ -126,7 +126,7 @@ $ make -f Makefile.mlton install
 ```
 
 Above command install SMLUnit to `/usr/local/mlton`.
-This install location can be set with `PREFIX` variable.
+This install location can be set with `PREFIX` variable like:
 
 ```sh
 $ make -f Makefile.mlton PREFIX=~/.sml/mlton install
@@ -148,9 +148,10 @@ $(SMLUNIT_LIB)/smlunit-lib.mlb
 .
 ```
 
+
 #### Test
 
-To run SMLUnit unit test, run the `test` target:
+To run SMLUnit unit tests, run the `test` target:
 
 ```sh
 $ make -f Makefile.mlton test
