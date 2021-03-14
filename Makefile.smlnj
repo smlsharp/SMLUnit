@@ -1,35 +1,35 @@
 
-SML             ?= sml
+SML               := sml
 # -32 or -64
 # empty is default
-SML_BITMODE     ?=
-SML_FLAGS       ?=
-HEAP_SUFFIX     ?= $(shell $(SML) $(SML_BITMODE) @SMLsuffix)
+SML_BITMODE       :=
+SML_FLAGS         :=
+HEAP_SUFFIX       := $(shell $(SML) $(SML_BITMODE) @SMLsuffix)
 
 # directory of CM product
-CM_SUFFIX       := $(shell $(SML) $(SML_BITMODE) < script/suffix.sml 2>&1 >/dev/null)
+CM_SUFFIX         := $(shell $(SML) $(SML_BITMODE) < script/suffix.sml 2>&1 >/dev/null)
 
-SMLDOC          ?= smldoc
-SMLDOC_ARGFILE  := src/smldoc.cfg
+SMLDOC            := smldoc
+SMLDOC_ARGFILE    := src/smldoc.cfg
 
-MLBUILD         ?= ml-build
-MLBUILD_FLAGS   ?=
+MLBUILD           := ml-build
+MLBUILD_FLAGS     :=
 
-MLDEPENDS       ?= ml-makedepend
-MLDEPENDS_FLAGS ?= -n
+MLDEPENDS         := ml-makedepend
+MLDEPENDS_FLAGS   := -n
 
-SML_DULIST      ?=
+SML_DULIST        :=
 
-PREFIX          ?= /usr/local/sml
-LIBDIR          ?= lib/smlunit-lib.cm
-DOCDIR          ?= doc/smlunit-lib
+PREFIX            := /usr/local/sml
+LIBDIR            := lib/smlunit-lib.cm
+DOCDIR            := doc/smlunit-lib
 
-SOURCES_CM      := smlunit-lib.cm \
-                   src/test/sources.cm \
-                   basis/test/sources.cm \
-                   example/sources.cm
+SOURCES_CM        := smlunit-lib.cm \
+                     src/test/sources.cm \
+                     basis/test/sources.cm \
+                     example/sources.cm
 
-DEPENDS         := $(SOURCES_CM:.cm=.d)
+DEPENDS           := $(SOURCES_CM:.cm=.d)
 
 TEST_TARGET       := bin/TestMain.$(HEAP_SUFFIX)
 BASIS_TEST_TARGET := bin/BasisTestMain.$(HEAP_SUFFIX)
