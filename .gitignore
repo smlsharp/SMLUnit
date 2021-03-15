@@ -2,7 +2,8 @@
 *.d
 # object
 *.o
-# compilation manager for sml/nj
+# sml/nj
+bin/
 .cm/
 # library
 libsmlunit.poly

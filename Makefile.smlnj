@@ -1,0 +1,139 @@
+
+SML               := sml
+# -32 or -64
+# empty is default
+SML_BITMODE       :=
+SML_FLAGS         :=
+HEAP_SUFFIX       := $(shell $(SML) $(SML_BITMODE) @SMLsuffix)
+
+# directory of CM product
+CM_SUFFIX         := $(shell $(SML) $(SML_BITMODE) < script/suffix.sml 2>&1 >/dev/null)
+
+SMLDOC            := smldoc
+SMLDOC_ARGFILE    := src/smldoc.cfg
+
+MLBUILD           := ml-build
+MLBUILD_FLAGS     :=
+
+MLDEPENDS         := ml-makedepend
+MLDEPENDS_FLAGS   := -n
+
+SML_DULIST        :=
+
+PREFIX            := /usr/local/sml
+LIBDIR            := lib/smlunit-lib.cm
+DOCDIR            := doc/smlunit-lib
+
+SOURCES_CM        := smlunit-lib.cm \
+                     src/test/sources.cm \
+                     basis/test/sources.cm \
+                     example/sources.cm
+
+DEPENDS           := $(SOURCES_CM:.cm=.d)
+
+TEST_TARGET       := bin/TestMain.$(HEAP_SUFFIX)
+BASIS_TEST_TARGET := bin/BasisTestMain.$(HEAP_SUFFIX)
+EXAMPLE_TARGET    := bin/ExampleMain.$(HEAP_SUFFIX)
+
+all: smlunit-lib
+
+
+.PHONY: smlunit-lib-nodoc
+smlunit-lib-nodoc: .cm/$(CM_SUFFIX)/smlunit-lib.cm
+
+
+.PHONY: smlunit-lib
+smlunit-lib: smlunit-lib-nodoc doc
+
+
+.cm/$(CM_SUFFIX)/%.cm: %.cm
+	@echo "  [SMLNJ] $@"
+	@echo 'CM.stabilize true "$<";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
+
+
+$(DEPENDS): %.d: %.cm
+	@echo "  [GEN] $@"
+	@touch $@
+	$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(CM_SUFFIX)
+	@sed -i -e "s|^\([^#][^:]\+\):|\1 $@:|" $@
+
+
+ifeq (,$(findstring clean,$(MAKECMDGOALS)))
+  include $(DEPENDS)
+endif
+
+.PHONY: install-nodoc
+install-nodoc: smlunit-lib-nodoc
+	@install -d $(PREFIX)/$(LIBDIR)
+	@cp -R .cm $(PREFIX)/$(LIBDIR)/
+	@echo "================================================================"
+	@echo "smlunit-lib has been installed to:"
+	@echo "\t$(PREFIX)/$(LIBDIR)"
+	@echo "Next, add an entry to your pathconfig (e.g. ~/.smlnj-pathconfig) such like:"
+	@echo "\tsmlunit-lib.cm $(PREFIX)/$(LIBDIR)"
+	@echo "Then you can load the library like"
+	@echo "\t- CM.make \"$$/smlunit-lib.cm\";"
+	@echo "================================================================"
+
+
+.PHONY: install
+install: install-doc install-nodoc
+
+
+.PHONY: doc
+doc:
+	@echo "  [SMLDoc]"
+	@$(RM) -r $(DOCDIR)
+	@install -d $(DOCDIR)
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d "$(DOCDIR)"
+
+
+.PHONY: install-doc
+install-doc: doc
+	@install -d $(PREFIX)/$(DOCDIR)
+	@cp -prT $(DOCDIR) $(PREFIX)/$(DOCDIR)
+	@echo "================================================================"
+	@echo "Generated API Documents of SMLUnit"
+	@echo "\t$(PREFIX)/$(DOCDIR)"
+	@echo "================================================================"
+
+
+$(TEST_TARGET): src/test/.cm/$(CM_SUFFIX)
+	@mkdir -p bin
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(<:%/.cm/$(CM_SUFFIX)=%/sources.cm) TestMain.main $(basename $@)
+
+
+$(BASIS_TEST_TARGET): basis/test/.cm/$(CM_SUFFIX)
+	@mkdir -p bin
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(<:%/.cm/$(CM_SUFFIX)=%/sources.cm) TestMain.main $(basename $@)
+
+
+.PHONY: test
+test: $(TEST_TARGET) $(BASIS_TEST_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$(TEST_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$(BASIS_TEST_TARGET)
+
+
+$(EXAMPLE_TARGET): example/.cm/$(CM_SUFFIX)
+	@mkdir -p bin
+	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/amd64-unix,%/sources.cm,$<) Main.main $(basename $@)
+
+
+.PHONY: example
+example: $(EXAMPLE_TARGET)
+	$(SML) $(SML_BITMODE) $(SML_DULIST) $(SML_FLAGS) @SMLload=$<
+
+
+.PHONY: clean
+clean:
+	-$(RM) $(DEPENDS)
+	-$(RM) -r $(DOCDIR)
+	-$(RM) -r .cm
+	-$(RM) -r src/.cm
+	-$(RM) -r src/main/.cm
+	-$(RM) -r src/test/.cm
+	-$(RM) $(TEST_TARGET)
+	-$(RM) -r basis/test/.cm
+	-$(RM) $(BASIS_TEST_TARGET)
+	-$(RM) -r example/.cm
+	-$(RM) $(EXAMPLE_TARGET)
