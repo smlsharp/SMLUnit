@@ -38,7 +38,8 @@ smlunit-lib: smlunit-lib-nodoc doc
 
 $(TYPECHECK_DUMMY): smlunit-lib.mlb
 	@echo "  [MLTON] $@"
-	@$(MLTON) $(MLTON_FLAGS) -output $@ $<
+	@$(MLTON) $(MLTON_FLAGS) -stop tc $<
+	@touch $@
 
 
 smlunit-lib.mlb.d: smlunit-lib.mlb
