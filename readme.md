@@ -16,8 +16,7 @@ What is this
 
  * A general unit testing frame work for SML system(# is not required)
  * This is imported from SML#v3.6.0 unofficial repository (https://github.com/smlsharp/smlsharp/tree/v3.6.0)
- * This framework support SML#, [SML/NJ] and [MLton] explicitly
- ** build scripts Makefile(for SML#), CM file(for SML/NJ) and MLB file(for MLton) are included.
+ * This framework support SML#, [SML/NJ], [MLton] and [Poly/ML] explicitly
 
 Setup
 ------------------------------
@@ -181,7 +180,7 @@ $ make -f Makefile.smlnj example
 
 #### Install
 
-To install SMLUnit for [PolyML], run the `install` target.
+To install SMLUnit for [Poly/ML], run the `install` target.
 
 ```sh
 $ make -f Makefile.polyml install
@@ -247,7 +246,7 @@ Errors:
 
 [MLton]: https://www.mlton.org/ "MLton"
 
-[PolyML]: https://www.polyml.org/ "PolyML"
+[Poly/ML]: https://www.polyml.org/ "PolyML"
 
 [SMLDoc]: https://www.pllab.riec.tohoku.ac.jp/smlsharp//?SMLDoc "SMLDoc"
 
