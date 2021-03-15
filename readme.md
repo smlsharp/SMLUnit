@@ -108,7 +108,7 @@ Depending on the test case, it will fails.
 
 #### Examples
 
-To run the example program, run `example` target:
+To run the example program, run the `example` target:
 
 ```sh
 $ make -f Makefile.smlnj example
@@ -178,24 +178,34 @@ $ make -f Makefile.smlnj example
 
 ### PolyML
 
-To build, just `make`:
+
+#### Install
+
+To install SMLUnit for [PolyML], run the `install` target.
 
 ```sh
-$ make -f Makefile.polyml
-  [POLYML] libsmlunit.poly
-Making main
-Making SMLUnit
-..
-Created structure SMLUnit
+$ make -f Makefile.polyml install
 ```
 
-Then you will get `./libsmlunit.poly` which is the collection of SMLUnit entities that can be loaded.
+To specify the directory to install to, run `make` with the variable `PREFIX`:
 
+```sh
+$ make -f Makefile.polyml PREFIX=~/.sml/polyml/5.8.1 install
+```
+
+The `install` target uses `SMLDoc` to generate the documentations for SMLUnit.
+If you do not need to generate documentation, run the `install-nodoc` target.
+
+```sh
+$ make -f Makefile.polyml install-nodoc
+```
+
+Then you will get `smlunit-lib.poly` in `PREFIX/lib/smlunitlib` which is the collection of SMLUnit entities.
 It is possible to load directly into the REPL:
 
 ```sh
 $ poly
-> PolyML.loadModule "/path/to/libsmlunit.poly";
+> PolyML.loadModule "/path/to/smlunit-lib.poly";
 signature ASSERT =
   sig
 ..
@@ -204,46 +214,29 @@ signature TESTRUNNER =
 val it = (): unit
 ```
 
+
 #### Test
 
-Execute unit tests for SMLUnit, run `test` target:
+To run SMLUnit unit tests, run the `test` target:
 
 ```sh
 $ make -f Makefile.polyml test
 ```
 
-In some test cases, it will fails.
+Depending on the test case, it will fails.
 
-
-#### Install
-
-To install [SMLUnit] for [PolyML], perform `install` target.
-
-```sh
-$ make -f Makefile.polyml install
-install -D -m 644 -t /usr/local/polyml/lib libsmlunit.poly
-```
-
-You can change installation directory with `PREFIX` variable:
-
-```sh
-$ make -f Makefile.polyml PREFIX=~/.sml install
-install -D -m 644 -t /home/<user>/.sml/polyml/lib libsmlunit.poly
-```
 
 #### Examples
 
-To run examples with Poly/ML, run the `example` target:
+To run the example program, run the `example` target:
 
 ```sh
 
 $ make -f Makefile.polyml example
-  [POLYML] libsmlunit.poly
+  [POLYML] bin/smlunit-example-poly.o
 ..
-  [POLYML] smlunit-example-poly.o
-..
-  [POLYC] smlunit-example-poly
-./smlunit-example-poly
+  [POLYC] bin/smlunit-example-poly
+bin/smlunit-example-poly
 .....
 tests = 5, failures = 0, errors = 0
 Failures:
