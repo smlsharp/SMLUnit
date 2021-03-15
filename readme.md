@@ -193,7 +193,7 @@ To specify the directory to install to, run `make` with the variable `PREFIX`:
 $ make -f Makefile.polyml PREFIX=~/.sml/polyml/5.8.1 install
 ```
 
-The `install` target uses `SMLDoc` to generate the documentations for SMLUnit.
+The `install` target uses [SMLDoc] to generate the documentations for SMLUnit.
 If you do not need to generate documentation, run the `install-nodoc` target.
 
 ```sh
@@ -246,6 +246,8 @@ Errors:
 [SML/NJ]: https://www.smlnj.org/ "Standard ML of New Jersey"
 
 [MLton]: https://www.mlton.org/ "MLton"
+
+[PolyML]: https://www.polyml.org/ "PolyML"
 
 [SMLDoc]: https://www.pllab.riec.tohoku.ac.jp/smlsharp//?SMLDoc "SMLDoc"
 
