@@ -16,7 +16,7 @@ What is this
 
  * A general unit testing frame work for SML system(# is not required)
  * This is imported from SML#v3.6.0 unofficial repository (https://github.com/smlsharp/smlsharp/tree/v3.6.0)
- * This framework support SML#, SML/NJ and MLton explicitly
+ * This framework support SML#, [SML/NJ] and [MLton] explicitly
  ** build scripts Makefile(for SML#), CM file(for SML/NJ) and MLB file(for MLton) are included.
 
 Setup
@@ -63,7 +63,7 @@ $ smlsharp -I/path/to/smlunit -L/path/to/smlunit -o test_foo test_foo.smi
 
 #### Install
 
-To install SMLUnit for SML/NJ, run `make install` with `Makefile.smlnj`:
+To install SMLUnit for [SML/NJ], run `make install` with `Makefile.smlnj`:
 
 ```sh
 $ make -f Makefile.smlnj install
@@ -75,7 +75,7 @@ To specify the directory to install to, run `make` with the variable `PREFIX`:
 $ make -f Makefile.smlnj install PREFIX=~/.sml/smlnj
 ```
 
-The `install` target uses `SMLDoc` to generate the documentations for SMLUnit.
+The `install` target uses [SMLDoc] to generate the documentations for SMLUnit.
 If you do not need to generate documentation, run the `install-nodoc` target.
 
 ```sh
@@ -119,7 +119,7 @@ $ make -f Makefile.smlnj example
 
 #### Install
 
-To install SMLUnit for MLton, run `make install` with `Makefile.mlton`:
+To install SMLUnit for [MLton], run `make install` with `Makefile.mlton`:
 
 ```sh
 $ make -f Makefile.mlton install
@@ -130,6 +130,13 @@ This install location can be set with `PREFIX` variable like:
 
 ```sh
 $ make -f Makefile.mlton PREFIX=~/.sml/mlton install
+```
+
+The `install` target uses [SMLDoc] to generate the documentations for SMLUnit.
+If you do not need to generate documentation, run the `install-nodoc` target.
+
+```sh
+$ make -f Makefile.mlton install-nodoc
 ```
 
 After running the `install` target, add an entry for `SMLUNIT_LIB` to your mlb path mapping file:
@@ -242,4 +249,10 @@ tests = 5, failures = 0, errors = 0
 Failures:
 Errors:
 ```
+
+[SML/NJ]: https://www.smlnj.org/ "Standard ML of New Jersey"
+
+[MLton]: https://www.mlton.org/ "MLton"
+
+[SMLDoc]: https://www.pllab.riec.tohoku.ac.jp/smlsharp//?SMLDoc "SMLDoc"
 
