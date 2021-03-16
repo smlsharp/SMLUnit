@@ -1,10 +1,12 @@
 SMLSHARP_ENV = SMLSHARP_HEAPSIZE=128M:1G
 SMLSHARP = smlsharp
 SMLFLAGS = -O2
-ALLOBJECTS = Main.o TestDictionary.o Dictionary.o
+ALLOBJECTS = call-main.o Main.o TestDictionary.o Dictionary.o
 
 testExec: $(ALLOBJECTS)
-	$(SMLSHARP_ENV) $(SMLSHARP) $(SMLFLAGS) -o testExec Main.smi
+	$(SMLSHARP_ENV) $(SMLSHARP) $(SMLFLAGS) -o testExec call-main.smi
+
+call-main.o: call-main.smi call-main.sml Main.smi
 
 Dictionary.o: Dictionary.sml Dictionary.smi DICTIONARY.sig Dictionary.smi
 
