@@ -199,7 +199,7 @@ If you do not need to generate documentation, run the `install-nodoc` target.
 $ make -f Makefile.polyml install-nodoc
 ```
 
-Then you will get `smlunit-lib.poly` in `PREFIX/lib/smlunitlib` which is the collection of SMLUnit entities.
+Then you will get `smlunit-lib.poly` in `PREFIX/lib/smlunit-lib` which is the collection of SMLUnit entities.
 It is possible to load directly into the REPL:
 
 ```sh
