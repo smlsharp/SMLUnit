@@ -10,10 +10,10 @@ DOCDIR         := doc/smlunit-lib
 SMLDOC         := smldoc
 SMLDOC_ARGFILE := src/smldoc.cfg
 
-SRC            := $(wildcard src/main/*.sml)
+SRC            := $(wildcard src/main/*.sml src/main/*.sig)
 TEST_SRC       := $(wildcard src/test/*.sml)
-BASIS_TEST_SRC := $(wildcard basis/test/*.sml)
-EXAMPLE_SRC    := $(wildcard example/*.sml)
+BASIS_TEST_SRC := $(wildcard basis/test/*.sml basis/test/*.sig)
+EXAMPLE_SRC    := $(wildcard example/*.sml example/*.sig)
 
 SMLUNIT_LIB    := smlunit-lib.poly
 TEST           := bin/smlunit-test-poly bin/smlunit-basis-test-poly
