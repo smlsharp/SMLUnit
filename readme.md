@@ -1,25 +1,21 @@
-SMLUnit:  Unit Testing Framework for SML(#)
-============================================================
+# SMLUnit:  Unit Testing Framework for SML(#)
 
 This is **unofficial** repository for SMLUnit.
 
 If you get official information, see http://www.pllab.riec.tohoku.ac.jp/smlsharp/?SMLUnit .
 
-What is **not** this
-------------------------------
+## What is **not** this
 
  * This is not official repository.
  * There is no relationship with SML# deveploment team or Tohoku University.
 
-What is this
-------------------------------
+## What is this
 
  * A general unit testing frame work for SML system(# is not required)
  * This is imported from SML#v3.6.0 unofficial repository (https://github.com/smlsharp/smlsharp/tree/v3.6.0)
  * This framework support SML#, [SML/NJ], [MLton] and [Poly/ML] explicitly
 
-Setup
-------------------------------
+## Setup
 
 ### SML&#x23;
 
