@@ -1,26 +1,21 @@
-SMLUnit:  Unit Testing Framework for SML(#)
-============================================================
+# SMLUnit:  Unit Testing Framework for SML(#)
 
 This is **unofficial** repository for SMLUnit.
 
 If you get official information, see http://www.pllab.riec.tohoku.ac.jp/smlsharp/?SMLUnit .
 
-What is **not** this
-------------------------------
+## What is **not** this
 
  * This is not official repository.
  * There is no relationship with SML# deveploment team or Tohoku University.
 
-What is this
-------------------------------
+## What is this
 
  * A general unit testing frame work for SML system(# is not required)
  * This is imported from SML#v3.6.0 unofficial repository (https://github.com/smlsharp/smlsharp/tree/v3.6.0)
- * This framework support SML#, [SML/NJ] and [MLton] explicitly
- ** build scripts Makefile(for SML#), CM file(for SML/NJ) and MLB file(for MLton) are included.
+ * This framework support SML#, [SML/NJ], [MLton] and [Poly/ML] explicitly
 
-Setup
-------------------------------
+## Setup
 
 ### SML&#x23;
 
@@ -108,7 +103,7 @@ Depending on the test case, it will fails.
 
 #### Examples
 
-To run the example program, run `example` target:
+To run the example program, run the `example` target:
 
 ```sh
 $ make -f Makefile.smlnj example
@@ -178,24 +173,34 @@ $ make -f Makefile.smlnj example
 
 ### PolyML
 
-To build, just `make`:
+
+#### Install
+
+To install SMLUnit for [Poly/ML], run the `install` target.
 
 ```sh
-$ make -f Makefile.polyml
-  [POLYML] libsmlunit.poly
-Making main
-Making SMLUnit
-..
-Created structure SMLUnit
+$ make -f Makefile.polyml install
 ```
 
-Then you will get `./libsmlunit.poly` which is the collection of SMLUnit entities that can be loaded.
+To specify the directory to install to, run `make` with the variable `PREFIX`:
 
+```sh
+$ make -f Makefile.polyml PREFIX=~/.sml/polyml/5.8.1 install
+```
+
+The `install` target uses [SMLDoc] to generate the documentations for SMLUnit.
+If you do not need to generate documentation, run the `install-nodoc` target.
+
+```sh
+$ make -f Makefile.polyml install-nodoc
+```
+
+Then you will get `smlunit-lib.poly` in `PREFIX/lib/smlunit-lib` which is the collection of SMLUnit entities.
 It is possible to load directly into the REPL:
 
 ```sh
 $ poly
-> PolyML.loadModule "/path/to/libsmlunit.poly";
+> PolyML.loadModule "/path/to/smlunit-lib.poly";
 signature ASSERT =
   sig
 ..
@@ -204,46 +209,29 @@ signature TESTRUNNER =
 val it = (): unit
 ```
 
+
 #### Test
 
-Execute unit tests for SMLUnit, run `test` target:
+To run SMLUnit unit tests, run the `test` target:
 
 ```sh
 $ make -f Makefile.polyml test
 ```
 
-In some test cases, it will fails.
+Depending on the test case, it will fails.
 
-
-#### Install
-
-To install [SMLUnit] for [PolyML], perform `install` target.
-
-```sh
-$ make -f Makefile.polyml install
-install -D -m 644 -t /usr/local/polyml/lib libsmlunit.poly
-```
-
-You can change installation directory with `PREFIX` variable:
-
-```sh
-$ make -f Makefile.polyml PREFIX=~/.sml install
-install -D -m 644 -t /home/<user>/.sml/polyml/lib libsmlunit.poly
-```
 
 #### Examples
 
-To run examples with Poly/ML, run the `example` target:
+To run the example program, run the `example` target:
 
 ```sh
 
 $ make -f Makefile.polyml example
-  [POLYML] libsmlunit.poly
+  [POLYML] bin/smlunit-example-poly.o
 ..
-  [POLYML] smlunit-example-poly.o
-..
-  [POLYC] smlunit-example-poly
-./smlunit-example-poly
+  [POLYC] bin/smlunit-example-poly
+bin/smlunit-example-poly
 .....
 tests = 5, failures = 0, errors = 0
 Failures:
@@ -253,6 +241,8 @@ Errors:
 [SML/NJ]: https://www.smlnj.org/ "Standard ML of New Jersey"
 
 [MLton]: https://www.mlton.org/ "MLton"
+
+[Poly/ML]: https://www.polyml.org/ "PolyML"
 
 [SMLDoc]: https://www.pllab.riec.tohoku.ac.jp/smlsharp//?SMLDoc "SMLDoc"
 
