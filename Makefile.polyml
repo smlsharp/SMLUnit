@@ -4,7 +4,7 @@ POLYMLC        := polyc
 POLYMLFLAGS    := -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
 
 PREFIX         := /usr/local/polyml
-LIBDIR         := lib/smlunit-lib
+LIBDIR         := $(PREFIX)/lib
 DOCDIR         := $(PREFIX)/doc
 
 SMLDOC         := smldoc
@@ -44,7 +44,7 @@ $(SMLUNIT_LIB): export.sml $(SRC)
 	@echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.make "src/main"' \
 		--use export.sml \
-		--eval 'PolyML.SaveState.saveModule ("$(SMLUNIT_LIB)", SMLUnit)'
+		--eval 'PolyML.SaveState.saveModule ("$@", SMLUnit)'
 
 
 bin/smlunit-test-poly.o: $(SMLUNIT_LIB) $(TEST_SRC)
@@ -65,12 +65,8 @@ $(TEST) $(EXAMPLE): %: %.o
 
 
 .PHONY: install-nodoc
-install-nodoc: smlunit-lib-nodoc
-	@install -D -m 644 -t $(PREFIX)/$(LIBDIR) $(SMLUNIT_LIB)
-	@echo "================================================================"
-	@echo "smlunit-lib has been installed to:"
-	@echo "\t$(PREFIX)/$(LIBDIR)/$(SMLUNIT_LIB)"
-	@echo "================================================================"
+install-nodoc: $(SMLUNIT_LIB)
+	@install -D -m 644 -t $(LIBDIR)/smlunit-lib $(SMLUNIT_LIB)
 
 
 .PHONY: install
