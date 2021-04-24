@@ -4,7 +4,7 @@ MLTON_FLAGS         :=
 
 PREFIX              := /usr/local/mlton
 LIBDIR              := lib/SMLUnit
-DOCDIR              := doc/smlunit-lib
+DOCDIR              := $(PREFIX)/doc
 
 SMLDOC              := smldoc
 SMLDOC_ARGFILE      := src/smldoc.cfg
@@ -86,18 +86,18 @@ install: install-doc install-nodoc
 .PHONY: doc
 doc:
 	@echo "  [SMLDoc]"
-	@$(RM) -r $(DOCDIR)
-	@install -d $(DOCDIR)
-	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d "$(DOCDIR)"
+	@$(RM) -r doc/api
+	@install -d doc/api
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d doc/api
 
 
 .PHONY: install-doc
 install-doc: doc
-	@install -d $(PREFIX)/$(DOCDIR)
-	@cp -prT $(DOCDIR) $(PREFIX)/$(DOCDIR)
+	@install -d $(DOCDIR)
+	@cp -prT doc $(DOCDIR)/smlunit-lib
 	@echo "================================================================"
 	@echo "Generated API Documents of SMLUnit"
-	@echo "\t$(PREFIX)/$(DOCDIR)"
+	@echo "\t$(DOCDIR)/smlunit-lib"
 	@echo "================================================================"
 
 
@@ -126,7 +126,7 @@ example: $(EXAMPLE_MLB:.mlb=)
 .PHONY: clean
 clean:
 	-$(RM) $(TYPECHECK_DUMMY)
-	-$(RM) -r $(DOCDIR)
+	-$(RM) -r doc/api
 	-$(RM) $(DEPENDS)
 	-$(RM) $(filter-out smlunit-lib,$(SMLUNIT_MLBS:.mlb=))
 

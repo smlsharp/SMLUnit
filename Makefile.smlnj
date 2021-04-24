@@ -22,7 +22,7 @@ SML_DULIST        :=
 
 PREFIX            := /usr/local/sml
 LIBDIR            := lib/smlunit-lib.cm
-DOCDIR            := doc/smlunit-lib
+DOCDIR            := $(PREFIX)/doc
 
 SOURCES_CM        := smlunit-lib.cm \
                      src/test/sources.cm \
@@ -83,18 +83,18 @@ install: install-doc install-nodoc
 .PHONY: doc
 doc:
 	@echo "  [SMLDoc]"
-	@$(RM) -r $(DOCDIR)
-	@install -d $(DOCDIR)
-	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d "$(DOCDIR)"
+	@$(RM) -r doc/api
+	@install -d doc/api
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d doc/api
 
 
 .PHONY: install-doc
 install-doc: doc
-	@install -d $(PREFIX)/$(DOCDIR)
-	@cp -prT $(DOCDIR) $(PREFIX)/$(DOCDIR)
+	@install -d $(DOCDIR)
+	@cp -prT doc $(DOCDIR)/smlunit-lib
 	@echo "================================================================"
 	@echo "Generated API Documents of SMLUnit"
-	@echo "\t$(PREFIX)/$(DOCDIR)"
+	@echo "\t$(DOCDIR)/smlunit-lib"
 	@echo "================================================================"
 
 
@@ -127,7 +127,7 @@ example: $(EXAMPLE_TARGET)
 .PHONY: clean
 clean:
 	-$(RM) $(DEPENDS)
-	-$(RM) -r $(DOCDIR)
+	-$(RM) -r doc/api
 	-$(RM) -r .cm
 	-$(RM) -r src/.cm
 	-$(RM) -r src/main/.cm
