@@ -1,15 +1,14 @@
 doc/api
 # depend
-*.d
+*.cm.d
+*.mlb.d
 # object
 *.o
 # sml/nj
 bin/
 .cm/
-# mlton
-bin/.smlunit-lib
-# library
-libsmlunit.poly
+# polyml
+smlunit-lib.poly
 # test executable
 smlunit-test-poly
 smlunit-basis-test-poly
