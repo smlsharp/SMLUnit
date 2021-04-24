@@ -21,40 +21,55 @@ MLDEPENDS_FLAGS   := -n
 SML_DULIST        :=
 
 PREFIX            := /usr/local/sml
-LIBDIR            := lib/smlunit-lib.cm
+LIBDIR            := $(PREFIX)/lib
 DOCDIR            := $(PREFIX)/doc
 
-SOURCES_CM        := smlunit-lib.cm \
-                     src/test/sources.cm \
-                     basis/test/sources.cm \
-                     example/sources.cm
-
-DEPENDS           := $(SOURCES_CM:.cm=.d)
+SMLUNIT_LIB       := .cm/$(CM_SUFFIX)/smlunit-lib.cm
+SMLUNIT_LIB_COMPAT := \
+                     .cm/$(CM_SUFFIX)/smlunitlib.cm
 
 TEST_TARGET       := bin/TestMain.$(HEAP_SUFFIX)
+
 BASIS_TEST_TARGET := bin/BasisTestMain.$(HEAP_SUFFIX)
+
 EXAMPLE_TARGET    := bin/ExampleMain.$(HEAP_SUFFIX)
+
+SMLUNIT_CM        := smlunit-lib.cm
+
+TEST_CM           := src/test/sources.cm
+
+BASIS_TEST_CM     := basis/test/sources.cm
+
+EXAMPLE_CM        := example/sources.cm
+
+DEPENDS           := $(SMLUNIT_CM).d
+
+TEST_DEPENDS      := $(TEST_CM:.cm=.cm.d) \
+                     $(BASIS_TEST_CM:.cm=.cm.d)
+
+EXAMPLE_DEPENDS   := $(EXAMPLE_CM:.cm=.cm.d)
+
 
 all: smlunit-lib
 
 
 .PHONY: smlunit-lib-nodoc
-smlunit-lib-nodoc: .cm/$(CM_SUFFIX)/smlunit-lib.cm
+smlunit-lib-nodoc: $(SMLUNIT_LIB) $(SMLUNIT_LIB_COMPAT)
 
 
 .PHONY: smlunit-lib
 smlunit-lib: smlunit-lib-nodoc doc
 
 
-.cm/$(CM_SUFFIX)/%.cm: %.cm
+$(SMLUNIT_LIB) $(SMLUNIT_LIB_COMPAT): .cm/$(CM_SUFFIX)/%.cm: %.cm
 	@echo "  [SMLNJ] $@"
 	@echo 'CM.stabilize true "$<";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
 
 
-$(DEPENDS): %.d: %.cm
+$(DEPENDS) $(TEST_DEPENDS) $(EXAMPLE_DEPENDS): %.cm.d: %.cm
 	@echo "  [GEN] $@"
-	@touch $@
-	$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(CM_SUFFIX)
+	@truncate --size 0 $@
+	@$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(CM_SUFFIX)
 	@sed -i -e "s|^\([^#][^:]\+\):|\1 $@:|" $@
 
 
@@ -62,17 +77,25 @@ ifeq (,$(findstring clean,$(MAKECMDGOALS)))
   include $(DEPENDS)
 endif
 
+
+ifeq (test,$(findstring test,$(MAKECMDGOALS)))
+  include $(TEST_DEPENDS)
+endif
+
+
+ifeq (example,$(findstring example,$(MAKECMDGOALS)))
+  include $(EXAMPLE_DEPENDS)
+endif
+
+
 .PHONY: install-nodoc
 install-nodoc: smlunit-lib-nodoc
-	@install -d $(PREFIX)/$(LIBDIR)
-	@cp -R .cm $(PREFIX)/$(LIBDIR)/
+	@install -D -m 644 -t $(LIBDIR)/smlunit-lib.cm/.cm/$(CM_SUFFIX)  $(SMLUNIT_LIB)
+	@install -D -m 644 -t $(LIBDIR)/smlunitlib.cm/.cm/$(CM_SUFFIX)   $(SMLUNIT_LIB_COMPAT)
 	@echo "================================================================"
-	@echo "smlunit-lib has been installed to:"
-	@echo "\t$(PREFIX)/$(LIBDIR)"
-	@echo "Next, add an entry to your pathconfig (e.g. ~/.smlnj-pathconfig) such like:"
-	@echo "\tsmlunit-lib.cm $(PREFIX)/$(LIBDIR)"
-	@echo "Then you can load the library like"
-	@echo "\t- CM.make \"$$/smlunit-lib.cm\";"
+	@echo "Add an entry to your pathconfig (e.g. ~/.smlnj-pathconfig):"
+	@echo "\tsmlunit-lib.cm $(LIBDIR)/smlunit-lib.cm"
+	@echo "\tsmlunitlib.cm  $(LIBDIR)/smlunitlib.cm"
 	@echo "================================================================"
 
 
@@ -98,14 +121,16 @@ install-doc: doc
 	@echo "================================================================"
 
 
-$(TEST_TARGET): src/test/.cm/$(CM_SUFFIX)
-	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(<:%/.cm/$(CM_SUFFIX)=%/sources.cm) TestMain.main $(basename $@)
+$(TEST_TARGET): $(TEST_CM)
+	@echo "  [SMLNJ] $@"
+	@install -d $(dir $@)
+	@$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $< TestMain.main $(basename $@)
 
 
-$(BASIS_TEST_TARGET): basis/test/.cm/$(CM_SUFFIX)
-	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(<:%/.cm/$(CM_SUFFIX)=%/sources.cm) TestMain.main $(basename $@)
+$(BASIS_TEST_TARGET): $(BASIS_TEST_CM)
+	@echo "  [SMLNJ] $@"
+	@install -d $(dir $@)
+	@$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $< TestMain.main $(basename $@)
 
 
 .PHONY: test
@@ -115,8 +140,9 @@ test: $(TEST_TARGET) $(BASIS_TEST_TARGET)
 
 
 $(EXAMPLE_TARGET): example/.cm/$(CM_SUFFIX)
+	@echo "  [SMLNJ] $@"
 	@mkdir -p bin
-	$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/amd64-unix,%/sources.cm,$<) Main.main $(basename $@)
+	@$(MLBUILD) $(SML_BITMODE) $(SML_DULIST) $(MLBUILD_FLAGS) $(patsubst %/.cm/amd64-unix,%/sources.cm,$<) Main.main $(basename $@)
 
 
 .PHONY: example
@@ -126,14 +152,18 @@ example: $(EXAMPLE_TARGET)
 
 .PHONY: clean
 clean:
+	-$(RM) $(SMLUNIT_LIB)
+	-$(RM) $(SMLUNIT_LIB_COMPAT)
 	-$(RM) $(DEPENDS)
+	-$(RM) $(TEST_TARGET)
+	-$(RM) $(BASIS_TEST_TARGET)
+	-$(RM) $(TEST_DEPENDS)
+	-$(RM) $(EXAMPLE_TARGET)
+	-$(RM) $(EXAMPLE_DEPENDS)
 	-$(RM) -r doc/api
 	-$(RM) -r .cm
 	-$(RM) -r src/.cm
 	-$(RM) -r src/main/.cm
 	-$(RM) -r src/test/.cm
-	-$(RM) $(TEST_TARGET)
 	-$(RM) -r basis/test/.cm
-	-$(RM) $(BASIS_TEST_TARGET)
 	-$(RM) -r example/.cm
-	-$(RM) $(EXAMPLE_TARGET)
