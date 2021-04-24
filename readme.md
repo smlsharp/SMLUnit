@@ -64,10 +64,11 @@ To install SMLUnit for [SML/NJ], run `make install` with `Makefile.smlnj`:
 $ make -f Makefile.smlnj install
 ```
 
-To specify the directory to install to, run `make` with the variable `PREFIX`:
+Above command install SMLUnit to `/usr/local/sml`.
+This install location can be set with `PREFIX` variable like:
 
 ```sh
-$ make -f Makefile.smlnj install PREFIX=~/.sml/smlnj
+$ make -f Makefile.smlnj install PREFIX=~/.sml/smlnj/110.99
 ```
 
 The `install` target uses [SMLDoc] to generate the documentations for SMLUnit.
@@ -92,7 +93,7 @@ $ echo 'smlunit-lib.cm PREFIX/lib/smlunit-lib.cm' >> ~/.smlnj-pathconfig
 
 #### Test
 
-To run SMLUnit unit tests, run the `test` target:
+To run unit tests, run the `test` target:
 
 ```sh
 $ make -f Makefile.smlnj test
@@ -134,14 +135,13 @@ If you do not need to generate documentation, run the `install-nodoc` target.
 $ make -f Makefile.mlton install-nodoc
 ```
 
-After running the `install` target, add an entry for `SMLUNIT_LIB` to your mlb path mapping file:
+After running the `install` target, add an entry for `SMLUNIT_LIB` to your mlb path mapping file to complete the installation.
 
 ```sh
 $ echo 'SMLUNIT_LIB /path/to/$PREFIX' >> /path/to/mlb-path-map
 ```
 
-
-For using SMLUnit, refer to `$(SMLUNIT_LIB)/smlunit-lib.mlb` from your mlbasis file.
+For using SMLUnit, refer to `$(SMLUNIT_LIB)/smlunit-lib.mlb` from your MLB file.
 
 ```
 $(SML_LIB)/basis/basis.mlb
@@ -153,7 +153,7 @@ $(SMLUNIT_LIB)/smlunit-lib.mlb
 
 #### Test
 
-To run SMLUnit unit tests, run the `test` target:
+To run unit tests, run the `test` target:
 
 ```sh
 $ make -f Makefile.mlton test
@@ -164,7 +164,7 @@ Depending on the test case, it will fails.
 
 #### Examples
 
-To run the example program, run `example` target:
+To run the example program, run the `example` target:
 
 ```sh
 $ make -f Makefile.smlnj example
@@ -176,13 +176,14 @@ $ make -f Makefile.smlnj example
 
 #### Install
 
-To install SMLUnit for [Poly/ML], run the `install` target.
+To install SMLUnit for [Poly/ML], run `make install` with `Makefile.polyml`.
 
 ```sh
 $ make -f Makefile.polyml install
 ```
 
-To specify the directory to install to, run `make` with the variable `PREFIX`:
+Above command install SMLUnit to `/usr/local/polyml`.
+This install location can be set with `PREFIX` variable like:
 
 ```sh
 $ make -f Makefile.polyml PREFIX=~/.sml/polyml/5.8.1 install
@@ -212,7 +213,7 @@ val it = (): unit
 
 #### Test
 
-To run SMLUnit unit tests, run the `test` target:
+To run unit tests, run the `test` target:
 
 ```sh
 $ make -f Makefile.polyml test
@@ -226,17 +227,9 @@ Depending on the test case, it will fails.
 To run the example program, run the `example` target:
 
 ```sh
-
 $ make -f Makefile.polyml example
-  [POLYML] bin/smlunit-example-poly.o
-..
-  [POLYC] bin/smlunit-example-poly
-bin/smlunit-example-poly
-.....
-tests = 5, failures = 0, errors = 0
-Failures:
-Errors:
 ```
+
 
 [SML/NJ]: https://www.smlnj.org/ "Standard ML of New Jersey"
 
