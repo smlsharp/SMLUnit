@@ -4,8 +4,8 @@ POLYMLC        := polyc
 POLYMLFLAGS    := -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
 
 PREFIX         := /usr/local/polyml
-LIBDIR         := lib/smlunit-lib
-DOCDIR         := doc/smlunit-lib
+LIBDIR         := $(PREFIX)/lib
+DOCDIR         := $(PREFIX)/doc
 
 SMLDOC         := smldoc
 SMLDOC_ARGFILE := src/smldoc.cfg
@@ -44,7 +44,7 @@ $(SMLUNIT_LIB): export.sml $(SRC)
 	@echo "" | $(POLYML) $(POLYMLFLAGS) \
 		--eval 'PolyML.make "src/main"' \
 		--use export.sml \
-		--eval 'PolyML.SaveState.saveModule ("$(SMLUNIT_LIB)", SMLUnit)'
+		--eval 'PolyML.SaveState.saveModule ("$@", SMLUnit)'
 
 
 bin/smlunit-test-poly.o: $(SMLUNIT_LIB) $(TEST_SRC)
@@ -65,12 +65,8 @@ $(TEST) $(EXAMPLE): %: %.o
 
 
 .PHONY: install-nodoc
-install-nodoc: smlunit-lib-nodoc
-	@install -D -m 644 -t $(PREFIX)/$(LIBDIR) $(SMLUNIT_LIB)
-	@echo "================================================================"
-	@echo "smlunit-lib has been installed to:"
-	@echo "\t$(PREFIX)/$(LIBDIR)/$(SMLUNIT_LIB)"
-	@echo "================================================================"
+install-nodoc: $(SMLUNIT_LIB)
+	@install -D -m 644 -t $(LIBDIR)/smlunit-lib $(SMLUNIT_LIB)
 
 
 .PHONY: install
@@ -80,18 +76,18 @@ install: install-doc install-nodoc
 .PHONY: doc
 doc:
 	@echo "  [SMLDoc]"
-	@$(RM) -r $(DOCDIR)
-	@install -d $(DOCDIR)
-	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d "$(DOCDIR)"
+	@$(RM) -r doc/api
+	@install -d doc/api
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d doc/api
 
 
 .PHONY: install-doc
 install-doc: doc
-	@install -d $(PREFIX)/$(DOCDIR)
-	@cp -prT $(DOCDIR) $(PREFIX)/$(DOCDIR)
+	@install -d $(DOCDIR)
+	@cp -prT doc $(DOCDIR)/smlunit-lib
 	@echo "================================================================"
 	@echo "Generated API Documents of SMLUnit"
-	@echo "\t$(PREFIX)/$(DOCDIR)"
+	@echo "\t$(DOCDIR)/smlunit-lib"
 	@echo "================================================================"
 
 
@@ -114,7 +110,7 @@ example: $(EXAMPLE)
 .PHONY: clean
 clean:
 	-$(RM) $(SMLUNIT_LIB)
-	-$(RM) -r $(DOCDIR)
+	-$(RM) -r doc/api
 	-$(RM) $(TEST)
 	-$(RM) $(TEST:=.o)
 	-$(RM) $(EXAMPLE)
