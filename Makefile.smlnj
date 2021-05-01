@@ -34,7 +34,8 @@ BASIS_TEST_TARGET := bin/BasisTestMain.$(HEAP_SUFFIX)
 
 EXAMPLE_TARGET    := bin/ExampleMain.$(HEAP_SUFFIX)
 
-SMLUNIT_CM        := smlunit-lib.cm
+SMLUNIT_CM        := smlunit-lib.cm \
+                     smlunitlib.cm
 
 TEST_CM           := src/test/sources.cm
 
@@ -42,7 +43,7 @@ BASIS_TEST_CM     := basis/test/sources.cm
 
 EXAMPLE_CM        := example/sources.cm
 
-DEPENDS           := $(SMLUNIT_CM).d
+DEPENDS           := $(SMLUNIT_CM:.cm=.cm.d)
 
 TEST_DEPENDS      := $(TEST_CM:.cm=.cm.d) \
                      $(BASIS_TEST_CM:.cm=.cm.d)
@@ -66,7 +67,15 @@ $(SMLUNIT_LIB) $(SMLUNIT_LIB_COMPAT): .cm/$(CM_SUFFIX)/%.cm: %.cm
 	@echo 'CM.stabilize true "$<";' | $(SML) $(SML_BITMODE) $(SML_DULIST)
 
 
-$(DEPENDS) $(TEST_DEPENDS) $(EXAMPLE_DEPENDS): %.cm.d: %.cm
+$(DEPENDS): %.cm.d: %.cm
+	@echo "  [GEN] $@"
+	@truncate --size 0 $@
+	@-$(RM) $(dir $<).cm/$(CM_SUFFIX)/$<
+	@$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(CM_SUFFIX)/$<
+	@sed -i -e "s|^\([^#][^:]\+\):|\1 $@:|" $@
+
+
+$(TEST_DEPENDS) $(EXAMPLE_DEPENDS): %.cm.d: %.cm
 	@echo "  [GEN] $@"
 	@truncate --size 0 $@
 	@$(MLDEPENDS) $(MLDEPENDS_FLAGS) $(SML_BITMODE) $(SML_DULIST) -f $@ $< $(dir $<).cm/$(CM_SUFFIX)
